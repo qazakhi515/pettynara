@@ -24,3 +24,4 @@ number[]): number {
 }
 
 console.log(getHighestIndex([1, 5, 4, 14, 32]));
+console.log(getHighestIndex([21,12,3,8,12]));
