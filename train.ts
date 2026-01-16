@@ -1,10 +1,24 @@
+// Shunday function tuzing, unga string argument pass bolsin. Function ushbu agrumentdagi digitlarni yangi stringda return qilsin
+// MASALAN: getDigits("m14i1t") return qiladi "141"
+
+function getDigit(num:string):string {
+return num
+.split ("")
+.filter(a => a >= "0" && a <= "9")
+.join("");
+}
+console.log(getDigit("BRR 111"));
+
+console.log(getDigit("ihl1n23m34"));
+
+
 /*shunday function tuzing, u integerlardan iborat arrayni argument sifatida qabul qilib, faqat positive qiymatlarni olib string holatda return qilsin
 MASALAN: getPositive([1, -4, 2]) return qiladi "12"*/
- let toplam: number[] = [1, 11, -2, 18, -11, 9];
-function getPositive (n: number[]):string[] {
-     return n.filter(n => n > 0).map(String);
-}
- console.log(getPositive(toplam));
+//  let toplam: number[] = [1, 11, -2, 18, -11, 9];
+// function getPositive (n: number[]):string[] {
+//      return n.filter(n => n > 0).map(String);
+// }
+//  console.log(getPositive(toplam));
 
 
 /*TASK G:
