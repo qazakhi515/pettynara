@@ -1,6 +1,8 @@
 import express from "express";
 import path from "path";
 import router from "./router";
+import routerAdmin from "./routerAdmin";
+
 
 /* 1- ENTRANCE */
 const app = express();
@@ -15,6 +17,9 @@ app.use(express.json());
 app.set("view", path.join(__dirname, "views"));   
 app.set("view engine", "ejs");
 /* 4- ROUTERS */
-app.use("/", router);    // Middleware Design Pattern
+app.use("/admin", routerAdmin);    //EJS
+app.use("/", router);              // React
 
+// Middleware Design Pattern.  Burak  ni back end qismini  React loyihaga rest api sifatida ishlatamiz
+// back end loyihamizni adminka loyihasini traditional qurish sifatida ishlatamiz
 export default app;   // common js da module.exports kabi qilinar edi esma js da esa export default boladi.
