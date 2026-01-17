@@ -7,8 +7,6 @@
   folderlar da => Kebab case;                     
   CSS => Snake case;                              button_style
 -Error handlings
-
-
 */
 
 // Shunday function tuzing, unga string argument pass bolsin. Function ushbu agrumentdagi digitlarni yangi stringda return qilsin
