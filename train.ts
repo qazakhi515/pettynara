@@ -1,15 +1,28 @@
+/* loyihamiz standartlari haqida yozib olamiz 
+
+-Logging standarts;
+-Naming standarts;
+  function, method, variable => Camel case;       goHome
+  class lar => Paskal case;                       MemberService
+  folderlar da => Kebab case;                     
+  CSS => Snake case;                              button_style
+-Error handlings
+
+
+*/
+
 // Shunday function tuzing, unga string argument pass bolsin. Function ushbu agrumentdagi digitlarni yangi stringda return qilsin
 // MASALAN: getDigits("m14i1t") return qiladi "141"
 
-function getDigit(num:string):string {
-return num
-.split ("")
-.filter(a => a >= "0" && a <= "9")
-.join("");
-}
-console.log(getDigit("BRR 111"));
+// function getDigit(num:string):string {
+// return num
+// .split ("")
+// .filter(a => a >= "0" && a <= "9")
+// .join("");
+// }
+// console.log(getDigit("BRR 111"));
 
-console.log(getDigit("ihl1n23m34"));
+// console.log(getDigit("ihl1n23m34"));
 
 
 /*shunday function tuzing, u integerlardan iborat arrayni argument sifatida qabul qilib, faqat positive qiymatlarni olib string holatda return qilsin
