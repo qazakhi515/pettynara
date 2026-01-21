@@ -2,7 +2,7 @@ import {Request, Response } from "express";
 import {T} from "../libs/types/common";
 import MemberService from "../models/Member.service";
 import { MemberInput } from "../libs/types/member";
-import {MemberType} from "../libs/types/enums/member.enum"
+import {MemberType} from "../libs/enums/member.enum";
 
 const restaurantController: T  = {};
 restaurantController.goHome = (req:Request, res: Response) => {

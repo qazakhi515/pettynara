@@ -1,4 +1,4 @@
-import { MemberStatus, MemberType } from "./enums/member.enum";
+import { MemberStatus, MemberType } from "../enums/member.enum";
 
 export interface Member {
     memberType: MemberType;
