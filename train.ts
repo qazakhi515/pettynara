@@ -1,3 +1,28 @@
+/*Shunday function tuzing, u parametrdagi array ichida eng ko'p
+takrorlangan raqamni topib qaytarsin.
+
+MASALAN: majorityElement([1,4,5,7,2,5,7,3,6,5,1])*/
+function majorityElement(re: number[]): number {
+  const count: Record<number, number> = {};
+  let max = 0;
+  let res = re[0]; // yoki 0
+
+  for (const num of re) {
+    count[num] = (count[num] ?? 0) + 1;
+
+    if (count[num] > max) {
+      max = count[num];
+      res = num;
+    }
+  }
+
+  return res;
+}
+console.log(majorityElement([1,4,5,7,2,5,7,3,6,5,1]));
+
+
+
+
 /* loyihamiz standartlari haqida yozib olamiz 
 
 -Logging standarts;

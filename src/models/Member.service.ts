@@ -41,7 +41,7 @@ class MemberService{
     const isMatch = await bcrypt.compare(
       input.memberPassword, 
       member.memberPassword
-    );
+    ); 
     
     if(!isMatch) {
       throw new Errors(HttpCode.UNAUTHORIZED, Message.WRONG_PASSWORD);
@@ -49,7 +49,6 @@ class MemberService{
     
     return await this.memberModel.findById(member._id).exec();
 
-  } 
-
+  }
 }
 export default MemberService;
