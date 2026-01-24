@@ -40,7 +40,7 @@ restaurantController.processLogin = async (req:Request, res: Response) => {
 
     const memberService = new MemberService();
     const result = await memberService.processLogin(input);
-    res.send(result);
+    res.send(result);   /// 1.1 dan kelgan natujani front end ga jonatib yuboryopmiz.
   } catch(err) {
     console.log("Error, processLogin:", err)
     res.send(err);
@@ -65,4 +65,4 @@ restaurantController.processSignup = async (req:Request, res: Response) => {
   } 
 };
 
-export default restaurantController;
+export default restaurantController; 
