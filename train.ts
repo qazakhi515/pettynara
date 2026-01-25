@@ -1,3 +1,27 @@
+
+// TASK J:
+
+// Shunday function tuzing, u string qabul qilsin.
+// Va string ichidagi eng uzun so'zni qaytarsin.
+
+function findLongestWord(str: string): string {
+  const words: string[] = str.split(" ");
+  let longest: string = "";
+
+  for (const word of words) {
+    if (word.length > longest.length) {
+      longest = word;
+    }
+  }
+
+  return longest;
+}
+
+// Misol:
+console.log(findLongestWord("I am uzbek living in SouthKorea!"));
+
+
+
 /*Shunday function tuzing, u parametrdagi array ichida eng ko'p
 takrorlangan raqamni topib qaytarsin.
 
