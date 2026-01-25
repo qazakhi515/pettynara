@@ -16,7 +16,7 @@ app.use(morgan(MORGAN_FORMAT));
 // authentication 
 // authorization
 /* 3- VIEWS */
-app.set("view", path.join(__dirname, "views"));   
+app.set("views", path.join(__dirname, "views"));   
 app.set("view engine", "ejs");
 /* 4- ROUTERS */
 app.use("/admin", routerAdmin);    //EJS
