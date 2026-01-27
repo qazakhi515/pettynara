@@ -46,13 +46,13 @@ public async signup(input: MemberInput):Promise<Member> {
     
     return await this.memberModel.findById(member._id).lean().exec();   //. 1.1 back end dan matija ni front end ga jonatib yuboryopmiz.
   }
-  /*  */ 
+  /*  SSR */ 
 
   public async processSignup(input: MemberInput):Promise<Member> {
     const exist = await this.memberModel
         .findOne({memberType: MemberType.RESTAURANT})
         .exec();
-    //if (exist) throw new Errors(HttpCode.BAD_REQUEST, Message.CREATE_FAILED)
+    if (exist) throw new Errors(HttpCode.BAD_REQUEST, Message.CREATE_FAILED)
      
     console.log("before:",input.memberPassword);
     const salt = await bcrypt.genSalt();
