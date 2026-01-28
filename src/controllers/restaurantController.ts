@@ -71,13 +71,17 @@ restaurantController.processLogin = async (
 ) => {
   try {
     console.log("processLogin");
+
     const input:LoginInput = req.body;
-   const result = await memberService.processLogin(input);
+    const result = await memberService.processLogin(input); //CALL:
+    console.log("Restaurant",result);
+
     req.session.member = result;
     req.session.save(function() {
-      res.send(result);
+      res.send(result);    // log vaqti da member lar infosini database ga yozyopmiz
     });
   /// 1.1 dan kelgan natujani front end ga jonatib yuboryopmiz.
+
   } catch(err) {
     console.log("Error, processLogin:", err);
     const message = 

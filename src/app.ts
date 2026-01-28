@@ -7,7 +7,6 @@ import { MORGAN_FORMAT } from "./libs/config";
 
 import session from "express-session";
 import ConnectMongoDB from "connect-mongodb-session"
-import { Session } from "inspector";
 
 const MongoDBStore = ConnectMongoDB(session);
 const store = new MongoDBStore({

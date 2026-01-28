@@ -1,24 +1,43 @@
+// TASK K:
+
+// Berilayotgan parametr tarkibida nechta unli harf bor
+// ekanligini aniqlovchi function tuzing
+
+// MASALAN: countVowels("string"); return 1
+
+// Yuqoridagi misolda 'string' so'zi tarkibida yagona unli harf 'i'
+// bo'lganligi uchun '1'ni qaytarmoqda
+
+function unliHarf(lyuboy: string): number {
+  return lyuboy
+    .split('')
+    .filter(harf => 'aeiou'.includes(harf))
+    .length;
+}
+
+console.log("salom =", unliHarf("salom"));
+console.log("uzbekistan =", unliHarf("uzbekistan"));
 
 // TASK J:
 
 // Shunday function tuzing, u string qabul qilsin.
 // Va string ichidagi eng uzun so'zni qaytarsin.
 
-function findLongestWord(str: string): string {
-  const words: string[] = str.split(" ");
-  let longest: string = "";
+// function findLongestWord(str: string): string {
+//   const words: string[] = str.split(" ");
+//   let longest: string = "";
 
-  for (const word of words) {
-    if (word.length > longest.length) {
-      longest = word;
-    }
-  }
+//   for (const word of words) {
+//     if (word.length > longest.length) {
+//       longest = word;
+//     }
+//   }
 
-  return longest;
-}
+//   return longest;
+// }
 
-// Misol:
-console.log(findLongestWord("I am uzbek living in SouthKorea!"));
+//  Misol:
+// console.log(findLongestWord("I am uzbek living in SouthKorea!"));
 
 
 
@@ -26,23 +45,23 @@ console.log(findLongestWord("I am uzbek living in SouthKorea!"));
 takrorlangan raqamni topib qaytarsin.
 
 MASALAN: majorityElement([1,4,5,7,2,5,7,3,6,5,1])*/
-function majorityElement(re: number[]): number {
-  const count: Record<number, number> = {};
-  let max = 0;
-  let res = re[0]; // yoki 0
+// function majorityElement(re: number[]): number {
+//   const count: Record<number, number> = {};
+//   let max = 0;
+//   let res = re[0]; // yoki 0
 
-  for (const num of re) {
-    count[num] = (count[num] ?? 0) + 1;
+//   for (const num of re) {
+//     count[num] = (count[num] ?? 0) + 1;
 
-    if (count[num] > max) {
-      max = count[num];
-      res = num;
-    }
-  }
+//     if (count[num] > max) {
+//       max = count[num];
+//       res = num;
+//     }
+//   }
 
-  return res;
-}
-console.log(majorityElement([1,4,5,7,2,5,7,3,6,5,1]));
+//   return res;
+// }
+// console.log(majorityElement([1,4,5,7,2,5,7,3,6,5,1]));
 
 
 
