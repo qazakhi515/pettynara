@@ -1,3 +1,22 @@
+// TASK L:
+// So'zlarni ketma - ketligini buzmasdan har bir so'zni
+// alohida teskarisiga o'girib beradigan fucntion tuzing.
+// Funtion yagona string qabul qilsin
+
+// MASALAN: reverseSentence("we like coding!") return "ew ekil !gnidoc";
+// Qaytayotgan natijaga e'tibor bersangiz, so'zlar joyi o'zgarmasdan turgan o'rnida teskarisiga o'girilmoqda
+ function reverseEach(soz: string):
+ string{
+   return soz
+   .split(' ')
+   .map((alfabit: string) =>
+  alfabit.split('').reverse().join('') )
+   .join(' ');
+ }
+ const natija = reverseEach('Salom MIT azolari');
+ console.log('Salom MIT azolari:  ', natija);
+
+
 // TASK K:
 
 // Berilayotgan parametr tarkibida nechta unli harf bor
@@ -8,15 +27,15 @@
 // Yuqoridagi misolda 'string' so'zi tarkibida yagona unli harf 'i'
 // bo'lganligi uchun '1'ni qaytarmoqda
 
-function unliHarf(lyuboy: string): number {
-  return lyuboy
-    .split('')
-    .filter(harf => 'aeiou'.includes(harf))
-    .length;
-}
+// function unliHarf(lyuboy: string): number {
+//   return lyuboy
+//     .split('')
+//     .filter(harf => 'aeiou'.includes(harf))
+//     .length;
+// }
 
-console.log("salom =", unliHarf("salom"));
-console.log("uzbekistan =", unliHarf("uzbekistan"));
+// console.log("salom =", unliHarf("salom"));
+// console.log("uzbekistan =", unliHarf("uzbekistan"));
 
 // TASK J:
 
