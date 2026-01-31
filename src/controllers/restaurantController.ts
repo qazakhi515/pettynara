@@ -79,7 +79,7 @@ restaurantController.processLogin = async (
 
     req.session.member = result;
     req.session.save(function() {
-    res.redirect("/admin/product/all");
+      res.redirect("/admin/product/all");
     // log vaqti da member lar infosini database ga yozyopmiz
     });
   /// 1.1 dan kelgan natujani front end ga jonatib yuboryopmiz.
