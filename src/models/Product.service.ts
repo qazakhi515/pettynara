@@ -13,6 +13,13 @@ class ProductServise{
         /** spa */
 
         /** ssr */
+        public async getAllProducts(): Promise<Product[]> {
+                const result = await this.productModel
+                .find().exec();
+                if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUNG);
+                return result;
+            }
+
 
         public async createNewProduct(input: ProductInput): Promise<Product> {   
             try{
@@ -37,19 +44,4 @@ class ProductServise{
          }
 
 
-
-
-/*public async updateChosenProduct(
-    id: string,
-    input: ProductUpdateInput,
-  ): Promise<Product> {
-    id = shapeIntoMongooseObjectId(id);
-    const result = await this.productModel
-      .findOneAndUpdate({ _id: id }, input, { new: true })
-      .exec();
-    if (!result) throw new Errors(HttpCode.NOT_MODIFIED, Message.UPDATE_FAILED);
-
-    return result;
-  }
-    }*/
 export default ProductServise;

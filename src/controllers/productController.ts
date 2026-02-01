@@ -12,8 +12,9 @@ const productController: T ={};
 
 productController.getAllProducts = async (req:AdminRequest, res: Response) => {
   try {
-    console.log("getAllProducts");;
-    res.render("products")
+    console.log("getAllProducts");
+    const data = await productService.getAllProducts();
+    res.render("products", {products: data})
   } catch(err) {
     console.log("Error, getAllProducts:", err)
    if(err instanceof Errors) res.status(err.code).json(err)
@@ -51,7 +52,7 @@ productController.createNewProduct = async (req:AdminRequest, res: Response) => 
 productController.updateChosenProduct = async (req: Request, res: Response) => {
   try {
     console.log("updateChosenProduct"); 
-    const id = req.params.id;  //@ts-ignore
+    const id = req.params.id;  //@ts-ignoreç
 
     const result = await productService.updateChosenProduct(id, req.body);
 
