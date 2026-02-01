@@ -1,3 +1,22 @@
+// TASK M:
+
+// Shunday function tuzing, u raqamlardan tashkil topgan array qabul qilsin
+// va array ichidagi har bir raqam uchun raqamning o'zi va hamda o'sha raqamni kvadratidan
+// tashkil topgan object hosil qilib, hosil bo'lgan objectlarni array ichida qaytarsin
+
+function kvadrat(numbers: number[]) {
+  return numbers.map((n) => {
+    return {
+      value: n,
+      square: n * n
+    };
+  });
+}
+const result = kvadrat([2, 4, 7, 8]);
+console.log(result);
+const natija = kvadrat([10, 11, 20]);
+console.log("KOPAYTMA :",natija);
+
 // TASK L:
 // So'zlarni ketma - ketligini buzmasdan har bir so'zni
 // alohida teskarisiga o'girib beradigan fucntion tuzing.
@@ -5,16 +24,16 @@
 
 // MASALAN: reverseSentence("we like coding!") return "ew ekil !gnidoc";
 // Qaytayotgan natijaga e'tibor bersangiz, so'zlar joyi o'zgarmasdan turgan o'rnida teskarisiga o'girilmoqda
- function reverseEach(soz: string):
- string{
-   return soz
-   .split(' ')
-   .map((alfabit: string) =>
-  alfabit.split('').reverse().join('') )
-   .join(' ');
- }
- const natija = reverseEach('Salom MIT azolari');
- console.log('Salom MIT azolari:  ', natija);
+//  function reverseEach(soz: string):
+//  string{
+//    return soz
+//    .split(' ')
+//    .map((alfabit: string) =>
+//   alfabit.split('').reverse().join('') )
+//    .join(' ');
+//  }
+//  const natija = reverseEach('Salom MIT azolari');
+//  console.log('Salom MIT azolari:  ', natija);
 
 
 // TASK K:
