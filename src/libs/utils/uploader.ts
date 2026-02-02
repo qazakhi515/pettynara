@@ -1,7 +1,7 @@
 import path from "path";
 import multer from "multer";
 import {v4} from "uuid";
-function getTargetImageStorage(address: any) {
+function getTargetImageStorage(address: any) {////review
     return multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, `./uploads/${address}`);
