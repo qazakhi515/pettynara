@@ -29,7 +29,7 @@ class ProductServise{
                 throw new Errors (HttpCode.BAD_REQUEST, Message.CREATE_FAILED)
             }
         }
-            public async updateChosenProduct(
+            public async updateChosenProduct(//parametr
                 id: string,
                 input: ProductUpdateInput,
             ): Promise<Product> {

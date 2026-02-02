@@ -88,5 +88,16 @@ public async signup(input: MemberInput):Promise<Member> {
     return await this.memberModel.findById(member._id).exec();   //. 1.1 back end dan matija ni front end ga jonatib yuboryopmiz.
 
   }
+
+  public async getUsers():Promise<Member[]> {
+      const result = await this.memberModel
+      .find({memberType: MemberType.USER})
+      .exec();
+
+      if(!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUNG);
+
+      return result;
+    }
+
 }
 export default MemberService;
