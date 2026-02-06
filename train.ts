@@ -1,21 +1,38 @@
+// Shunday function yozing va u har xil qiymatlardan iborat array qabul qilsin. 
+// Va array ichidagi sonlar yig'indisini hisoblab chiqgan javobni qaytarsin
+//  MASALAN: calculateSumOfNumbers([10, "10", {son: 10}, true, 35]); return 45
+
+
+function calculateSumOfNumbers(arr: unknown[]): number {
+  return arr.reduce((sum: number, item: unknown): number => {
+    if (typeof item === "number") {
+      return sum + item;
+    }
+    return sum;
+  }, 0);
+}
+
+// Misol:
+calculateSumOfNumbers([10, "10", { son: 10 }, true, 35]);
+console.log(calculateSumOfNumbers([10, "10", { son: 10 }, true, 35]))
 // N-TASK: 
 
 // Shunday function yozing, u string qabul qilsin va string palindrom yani togri oqilganda ham, orqasidan oqilganda ham bir hil oqiladigan soz ekanligini aniqlab boolean qiymat qaytarsin.
 // MASALAN: palindromCheck("dad") return true;  palindromCheck("son") return false;
 
-function palindrome(polindr: string): boolean {
-  for (let i = 0; i < polindr.length / 2; i++) {
-    if (polindr[i] !== polindr[polindr.length - 1 - i]) {
-      return false;
-    }
-  }
-  return true;
-}
+// function palindrome(polindr: string): boolean {
+//   for (let i = 0; i < polindr.length / 2; i++) {
+//     if (polindr[i] !== polindr[polindr.length - 1 - i]) {
+//       return false;
+//     }
+//   }
+//   return true;
+// }
 
-// Misollar
-console.log(palindrome("dad")); 
-console.log(palindrome("son")); 
-console.log(palindrome("kiyik")); 
+// // Misollar
+// console.log(palindrome("dad")); 
+// console.log(palindrome("son")); 
+// console.log(palindrome("kiyik")); 
 
 // TASK M:
 
