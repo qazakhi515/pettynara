@@ -1,8 +1,15 @@
 console.log("Signup frontend javascript file");
- $(function(){});
+ $(function(){
+    const fileTarget = $(".file-box .upload-hidden");
+    let filename;
+    fileTarget.on("change", function(){
+        const uploadFile = $(this)[0].files[0];
+        console.log(uploadFile);
+        const fileType = uploadFile["type"]
+    })
+ });
 
 function validateSignupForm() {
-    console.log("excecute");
     const memberNick = $(".member-nick").val();
     const memberPhone = $(".member-phone").val();
     const memberPassword = $(".member-password").val();
