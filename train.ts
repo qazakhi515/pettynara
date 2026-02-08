@@ -1,20 +1,40 @@
+
+// TASK P:
+
+// Parametr sifatida yagona object qabul qiladigan function yozing.
+// Qabul qilingan objectni nested array sifatida convert qilib qaytarsin
+
+// MASALAN: objectToArray( {a: 10, b: 20}) return [['a', 10], ['b', 20]]
+
+function objectToArray(
+  obj: Record<string, any>
+): [string, any][] {
+  return Object.entries(obj);
+}
+const result = objectToArray({ a: 10, b: 20 });
+console.log("result :",result)
+
+const result1 = objectToArray({ a: 24, b: 22 });
+console.log("result1:",result1)
+
+
 // Shunday function yozing va u har xil qiymatlardan iborat array qabul qilsin. 
 // Va array ichidagi sonlar yig'indisini hisoblab chiqgan javobni qaytarsin
 //  MASALAN: calculateSumOfNumbers([10, "10", {son: 10}, true, 35]); return 45
 
 
-function calculateSumOfNumbers(arr: unknown[]): number {
-  return arr.reduce((sum: number, item: unknown): number => {
-    if (typeof item === "number") {
-      return sum + item;
-    }
-    return sum;
-  }, 0);
-}
+// function calculateSumOfNumbers(arr: unknown[]): number {
+//   return arr.reduce((sum: number, item: unknown): number => {
+//     if (typeof item === "number") {
+//       return sum + item;
+//     }
+//     return sum;
+//   }, 0);
+// }
 
-// Misol:
-calculateSumOfNumbers([10, "10", { son: 10 }, true, 35]);
-console.log(calculateSumOfNumbers([10, "10", { son: 10 }, true, 35]))
+// // Misol:
+// calculateSumOfNumbers([10, "10", { son: 10 }, true, 35]);
+// console.log(calculateSumOfNumbers([10, "10", { son: 10 }, true, 35]))
 // N-TASK: 
 
 // Shunday function yozing, u string qabul qilsin va string palindrom yani togri oqilganda ham, orqasidan oqilganda ham bir hil oqiladigan soz ekanligini aniqlab boolean qiymat qaytarsin.
