@@ -37,7 +37,7 @@ productController.createNewProduct = async (req:AdminRequest, res: Response) => 
     await productService.createNewProduct(data);
 
     res.send(
-      `<script> alert ("successfully created"); window.location.replace('/admin/product/all') (</script>`
+      `<script> alert ("successfully created"); window.location.replace('/admin/product/all') </script>`
     );
 
   } catch(err) {
@@ -45,7 +45,7 @@ productController.createNewProduct = async (req:AdminRequest, res: Response) => 
     const message = 
       err instanceof Errors ? err.message : Message.SOMETHING_WENT_WRONG;
     res.send(
-      `<script> alert ("${message}"); window.location.replace('/admin/product/all') (</script>`
+      `<script> alert ("${message}"); window.location.replace('/admin/product/all') </script>`
     );
   } 
 };

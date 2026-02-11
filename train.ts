@@ -1,4 +1,24 @@
 
+
+// Shunday function yozing, u 2 ta parametrga ega bo'lib
+// birinchisi object, ikkinchisi string bo'lsin.
+// Agar qabul qilinayotgan ikkinchi string, objectning
+// biror bir propertysiga mos kelsa, 'true', aks holda mos kelmasa 'false' qaytarsin.
+
+function hasProperty(
+  obj: Record<string, unknown>,
+  prop: string
+): boolean {
+  return prop in obj;
+}
+ const person = {
+  name: "Justin",
+  age: 30,
+  location: "Cheonju"
+ };
+ console.log(hasProperty(person,"name"));
+ console.log(hasProperty(person,"age"));
+ console.log(hasProperty(person,"main"));
 // TASK P:
 
 // Parametr sifatida yagona object qabul qiladigan function yozing.
@@ -6,16 +26,16 @@
 
 // MASALAN: objectToArray( {a: 10, b: 20}) return [['a', 10], ['b', 20]]
 
-function objectToArray(
-  obj: Record<string, any>
-): [string, any][] {
-  return Object.entries(obj);
-}
-const result = objectToArray({ a: 10, b: 20 });
-console.log("result :",result)
+// function objectToArray(
+//   obj: Record<string, any>
+// ): [string, any][] {
+//   return Object.entries(obj);
+// }
+// const result = objectToArray({ a: 10, b: 20 });
+// console.log("result :",result)
 
-const result1 = objectToArray({ a: 24, b: 22 });
-console.log("result1:",result1)
+// const result1 = objectToArray({ a: 24, b: 22 });
+// console.log("result1:",result1)
 
 
 // Shunday function yozing va u har xil qiymatlardan iborat array qabul qilsin. 
