@@ -1,24 +1,44 @@
+// TASK R
 
+// Shunday function yozing, u string parametrga ega bo'lsin.
+// Agar argument sifatida berilayotgan string, "1 + 2" bo'lsa,
+// string ichidagi sonlarin yig'indisni hisoblab, number holatida qaytarsin
+
+// MASALAN: calculate("1 + 3"); return 4;
+// 1 + 3 = 4, shu sababli 4 natijani qaytarmoqda.
+function sumFromString(str: string): number {
+    const raqam: string[] = str.split("+");
+    let yigindi: number = 0;
+
+    for (let i = 0; i < raqam.length; i++) {
+        yigindi += Number(raqam[i].trim());
+    }
+
+    return yigindi;
+}
+
+console.log(sumFromString("1 + 2"));
+console.log(sumFromString("5 + 6 + 7"));
 
 // Shunday function yozing, u 2 ta parametrga ega bo'lib
 // birinchisi object, ikkinchisi string bo'lsin.
 // Agar qabul qilinayotgan ikkinchi string, objectning
 // biror bir propertysiga mos kelsa, 'true', aks holda mos kelmasa 'false' qaytarsin.
 
-function hasProperty(
-  obj: Record<string, unknown>,
-  prop: string
-): boolean {
-  return prop in obj;
-}
- const person = {
-  name: "Justin",
-  age: 30,
-  location: "Cheonju"
- };
- console.log(hasProperty(person,"name"));
- console.log(hasProperty(person,"age"));
- console.log(hasProperty(person,"main"));
+// function hasProperty(
+//   obj: Record<string, unknown>,
+//   prop: string
+// ): boolean {
+//   return prop in obj;
+// }
+//  const person = {
+//   name: "Justin",
+//   age: 30,
+//   location: "Cheonju"
+//  };
+//  console.log(hasProperty(person,"name"));
+//  console.log(hasProperty(person,"age"));
+//  console.log(hasProperty(person,"main"));
 // TASK P:
 
 // Parametr sifatida yagona object qabul qiladigan function yozing.
