@@ -1,3 +1,24 @@
+// Shunday function tuzing, u numberlardan tashkil topgan array qabul qilsin
+// va o'sha numberlar orasidagi tushib qolgan sonni topib uni return qilsin.
+
+// MASALAN: missingNumber([3, 0, 1]); return 2
+// Yuqoridagi misolda, berilayotgan sonlar tarkibini tartiblasak
+// '2' soni tushib qolgan
+const missingNum = (arr: number[]): number => {
+  const num = arr.length + 1;
+  const expectedSum = (num * (num + 1)) / 2;
+  const actualSum = arr.reduce((sum, num) => sum + num, 0);
+  return expectedSum - actualSum;
+};
+const numbers: number[] = [1, 2, 3, 5];
+const numbers1: number[] = [1, 2, 3, 4, 5, 7];
+
+const natija: number = missingNum(numbers);
+const natija1: number = missingNum(numbers1);
+
+console.log("natija:", natija);
+console.log("natija1:", natija1);
+
 // TASK R
 
 // Shunday function yozing, u string parametrga ega bo'lsin.
@@ -6,19 +27,19 @@
 
 // MASALAN: calculate("1 + 3"); return 4;
 // 1 + 3 = 4, shu sababli 4 natijani qaytarmoqda.
-function sumFromString(str: string): number {
-    const raqam: string[] = str.split("+");
-    let yigindi: number = 0;
+// function sumFromString(str: string): number {
+//     const raqam: string[] = str.split("+");
+//     let yigindi: number = 0;
 
-    for (let i = 0; i < raqam.length; i++) {
-        yigindi += Number(raqam[i].trim());
-    }
+//     for (let i = 0; i < raqam.length; i++) {
+//         yigindi += Number(raqam[i].trim());
+//     }
 
-    return yigindi;
-}
+//     return yigindi;
+// }
 
-console.log(sumFromString("1 + 2"));
-console.log(sumFromString("5 + 6 + 7"));
+// console.log(sumFromString("1 + 2"));
+// console.log(sumFromString("5 + 6 + 7"));
 
 // Shunday function yozing, u 2 ta parametrga ega bo'lib
 // birinchisi object, ikkinchisi string bo'lsin.
@@ -57,11 +78,9 @@ console.log(sumFromString("5 + 6 + 7"));
 // const result1 = objectToArray({ a: 24, b: 22 });
 // console.log("result1:",result1)
 
-
-// Shunday function yozing va u har xil qiymatlardan iborat array qabul qilsin. 
+// Shunday function yozing va u har xil qiymatlardan iborat array qabul qilsin.
 // Va array ichidagi sonlar yig'indisini hisoblab chiqgan javobni qaytarsin
 //  MASALAN: calculateSumOfNumbers([10, "10", {son: 10}, true, 35]); return 45
-
 
 // function calculateSumOfNumbers(arr: unknown[]): number {
 //   return arr.reduce((sum: number, item: unknown): number => {
@@ -75,7 +94,7 @@ console.log(sumFromString("5 + 6 + 7"));
 // // Misol:
 // calculateSumOfNumbers([10, "10", { son: 10 }, true, 35]);
 // console.log(calculateSumOfNumbers([10, "10", { son: 10 }, true, 35]))
-// N-TASK: 
+// N-TASK:
 
 // Shunday function yozing, u string qabul qilsin va string palindrom yani togri oqilganda ham, orqasidan oqilganda ham bir hil oqiladigan soz ekanligini aniqlab boolean qiymat qaytarsin.
 // MASALAN: palindromCheck("dad") return true;  palindromCheck("son") return false;
@@ -90,9 +109,9 @@ console.log(sumFromString("5 + 6 + 7"));
 // }
 
 // // Misollar
-// console.log(palindrome("dad")); 
-// console.log(palindrome("son")); 
-// console.log(palindrome("kiyik")); 
+// console.log(palindrome("dad"));
+// console.log(palindrome("son"));
+// console.log(palindrome("kiyik"));
 
 // TASK M:
 
@@ -130,7 +149,6 @@ console.log(sumFromString("5 + 6 + 7"));
 //  }
 //  const natija = reverseEach('Salom MIT azolari');
 //  console.log('Salom MIT azolari:  ', natija);
-
 
 // TASK K:
 
@@ -173,8 +191,6 @@ console.log(sumFromString("5 + 6 + 7"));
 //  Misol:
 // console.log(findLongestWord("I am uzbek living in SouthKorea!"));
 
-
-
 /*Shunday function tuzing, u parametrdagi array ichida eng ko'p
 takrorlangan raqamni topib qaytarsin.
 
@@ -196,9 +212,6 @@ MASALAN: majorityElement([1,4,5,7,2,5,7,3,6,5,1])*/
 //   return res;
 // }
 // console.log(majorityElement([1,4,5,7,2,5,7,3,6,5,1]));
-
-
-
 
 /* loyihamiz standartlari haqida yozib olamiz 
 
@@ -224,7 +237,6 @@ MASALAN: majorityElement([1,4,5,7,2,5,7,3,6,5,1])*/
 
 // console.log(getDigit("ihl1n23m34"));
 
-
 /*shunday function tuzing, u integerlardan iborat arrayni argument sifatida qabul qilib, faqat positive qiymatlarni olib string holatda return qilsin
 MASALAN: getPositive([1, -4, 2]) return qiladi "12"*/
 //  let toplam: number[] = [1, 11, -2, 18, -11, 9];
@@ -232,7 +244,6 @@ MASALAN: getPositive([1, -4, 2]) return qiladi "12"*/
 //      return n.filter(n => n > 0).map(String);
 // }
 //  console.log(getPositive(toplam));
-
 
 /*TASK G:
 
