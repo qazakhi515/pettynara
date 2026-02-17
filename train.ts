@@ -1,23 +1,51 @@
+//Shunday function tuzing, u sonlardan tashkil topgan 2'ta array qabul qilsin.
+// Va ikkala arraydagi sonlarni tartiblab bir arrayda qaytarsin.
+
+function mergeSortedArrays(arr1: number[], arr2: number[]): number[] {
+  const result: number[] = [];
+  let i: number = 0;
+  let j: number = 0;
+  while (i < arr1.length && j < arr2.length) {
+    if (arr1[i] <= arr2[j]) {
+      result.push(arr1[i]);
+      i++;
+    } else {
+      result.push(arr2[j]);
+      j++;
+    }
+  }
+  while (i < arr1.length) {
+    result.push(arr1[i]);
+    i++;
+  }
+  while (j < arr2.length) {
+    result.push(arr2[j]);
+    j++;
+  }
+  return result;
+}
+const merged = mergeSortedArrays([0, 3, 4], [4, 6, 11]);
+console.log(merged);
 // Shunday function tuzing, u numberlardan tashkil topgan array qabul qilsin
 // va o'sha numberlar orasidagi tushib qolgan sonni topib uni return qilsin.
 
 // MASALAN: missingNumber([3, 0, 1]); return 2
 // Yuqoridagi misolda, berilayotgan sonlar tarkibini tartiblasak
 // '2' soni tushib qolgan
-const missingNum = (arr: number[]): number => {
-  const num = arr.length + 1;
-  const expectedSum = (num * (num + 1)) / 2;
-  const actualSum = arr.reduce((sum, num) => sum + num, 0);
-  return expectedSum - actualSum;
-};
-const numbers: number[] = [1, 2, 3, 5];
-const numbers1: number[] = [1, 2, 3, 4, 5, 7];
+// const missingNum = (arr: number[]): number => {
+//   const num = arr.length + 1;
+//   const expectedSum = (num * (num + 1)) / 2;
+//   const actualSum = arr.reduce((sum, num) => sum + num, 0);
+//   return expectedSum - actualSum;
+// };
+// const numbers: number[] = [1, 2, 3, 5];
+// const numbers1: number[] = [1, 2, 3, 4, 5, 7];
 
-const natija: number = missingNum(numbers);
-const natija1: number = missingNum(numbers1);
+// const natija: number = missingNum(numbers);
+// const natija1: number = missingNum(numbers1);
 
-console.log("natija:", natija);
-console.log("natija1:", natija1);
+// console.log("natija:", natija);
+// console.log("natija1:", natija1);
 
 // TASK R
 
