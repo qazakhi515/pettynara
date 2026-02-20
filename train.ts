@@ -1,31 +1,48 @@
+//shunday function tuzing uni number parametri bolsin. va bu parametrgacha 0dan boshlab oraliqda nechta toq son borligini aniqlab return qilsin
+function sumOdds(number: number): number {
+  let count: number = 0;
+
+  for (let i: number = 0; i < number; i++) {
+    if (i % 2 !== 0) {
+      count++;
+    }
+  }
+
+  return count;
+}
+
+// Misollar:
+console.log(sumOdds(9)); // 4
+console.log(sumOdds(10)); // 4
+
 //Shunday function tuzing, u sonlardan tashkil topgan 2'ta array qabul qilsin.
 // Va ikkala arraydagi sonlarni tartiblab bir arrayda qaytarsin.
 
-function mergeSortedArrays(arr1: number[], arr2: number[]): number[] {
-  const result: number[] = [];
-  let i: number = 0;
-  let j: number = 0;
-  while (i < arr1.length && j < arr2.length) {
-    if (arr1[i] <= arr2[j]) {
-      result.push(arr1[i]);
-      i++;
-    } else {
-      result.push(arr2[j]);
-      j++;
-    }
-  }
-  while (i < arr1.length) {
-    result.push(arr1[i]);
-    i++;
-  }
-  while (j < arr2.length) {
-    result.push(arr2[j]);
-    j++;
-  }
-  return result;
-}
-const merged = mergeSortedArrays([0, 3, 4], [4, 6, 11]);
-console.log(merged);
+// function mergeSortedArrays(arr1: number[], arr2: number[]): number[] {
+//   const result: number[] = [];
+//   let i: number = 0;
+//   let j: number = 0;
+//   while (i < arr1.length && j < arr2.length) {
+//     if (arr1[i] <= arr2[j]) {
+//       result.push(arr1[i]);
+//       i++;
+//     } else {
+//       result.push(arr2[j]);
+//       j++;
+//     }
+//   }
+//   while (i < arr1.length) {
+//     result.push(arr1[i]);
+//     i++;
+//   }
+//   while (j < arr2.length) {
+//     result.push(arr2[j]);
+//     j++;
+//   }
+//   return result;
+// }
+// const merged = mergeSortedArrays([0, 3, 4], [4, 6, 11]);
+// console.log(merged);
 // Shunday function tuzing, u numberlardan tashkil topgan array qabul qilsin
 // va o'sha numberlar orasidagi tushib qolgan sonni topib uni return qilsin.
 
