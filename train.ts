@@ -1,19 +1,44 @@
-//shunday function tuzing uni number parametri bolsin. va bu parametrgacha 0dan boshlab oraliqda nechta toq son borligini aniqlab return qilsin
-function sumOdds(number: number): number {
-  let count: number = 0;
+// TASK V
 
-  for (let i: number = 0; i < number; i++) {
-    if (i % 2 !== 0) {
-      count++;
+// Shunday function yozing, uni string parametri bo'lsin.
+// Va bu function stringdagi har bir harfni o'zi bilan
+// necha marotaba taktorlanganligini ko'rsatuvchi object qaytarsin.
+// MASALAN: countChars("hello") return {h: 1, e: 1, l: 2, o: 1}
+// Yuqoridagi misolda, 'hello' so'zi tarkibida
+// qatnashgan harflar necha marotaba takrorlangini bilan
+// object sifatida qaytarilmoqda.
+function countChars(str: string): Record<string, number> {
+  const result: Record<string, number> = {};
+
+  for (const char of str) {
+    if (result[char]) {
+      result[char]++;
+    } else {
+      result[char] = 1;
     }
   }
 
-  return count;
+  return result;
 }
 
-// Misollar:
-console.log(sumOdds(9)); // 4
-console.log(sumOdds(10)); // 4
+console.log(countChars("hello"));
+console.log(countChars("salom"));
+// Natija: { h: 1, e: 1, l: 2, o: 1 }//shunday function tuzing uni number parametri bolsin. va bu parametrgacha 0dan boshlab oraliqda nechta toq son borligini aniqlab return qilsin
+// function sumOdds(number: number): number {
+//   let count: number = 0;
+
+//   for (let i: number = 0; i < number; i++) {
+//     if (i % 2 !== 0) {
+//       count++;
+//     }
+//   }
+
+//   return count;
+// }
+
+// // Misollar:
+// console.log(sumOdds(9)); // 4
+// console.log(sumOdds(10)); // 4
 
 //Shunday function tuzing, u sonlardan tashkil topgan 2'ta array qabul qilsin.
 // Va ikkala arraydagi sonlarni tartiblab bir arrayda qaytarsin.
