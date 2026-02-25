@@ -7,13 +7,12 @@ class AuthService {
   private readonly secretToken: string;
 
   constructor() {
-    this.secretToken = process.env.SECRET_TOKEN as string;
+    this.secretToken = process.env.SECRET_TOKEN as string; //tushinma
   }
 
   public async createToken(payload: Member): Promise<string> {
     return new Promise((resolve, reject) => {
       const duration = `${AUTH_TIMER}h`;
-
       jwt.sign(
         payload,
         process.env.SECRET_TOKEN as string,
@@ -31,14 +30,14 @@ class AuthService {
     });
   }
 
-  //   public async checkAuth(token: string): Promise<Member> {
-  //     const result: Member = (await jwt.verify(
-  //       token,
-  //       this.secretToken
-  //     )) as Member;
-  //     console.log(`--- [AUTH] memberNick: ${result.memberNick} ---`);
-  //     return result;
-  //   }
+  public async checkAuth(token: string): Promise<Member> {
+    const result: Member = (await jwt.verify(
+      token,
+      this.secretToken,
+    )) as Member;
+    console.log(`--- [AUTH] memberNick: ${result.memberNick} ---`);
+    return result;
+  }
 }
 
 export default AuthService;
