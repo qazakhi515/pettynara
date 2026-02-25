@@ -1,3 +1,22 @@
+// TASK W
+
+// Shunday function yozing, u o'ziga parametr sifatida
+// yagona array va number qabul qilsin. Siz tuzgan function
+// arrayni numberda berilgan uzunlikda kesib bo'laklarga
+// ajratgan holatida qaytarsin.
+
+function bolakArray<T>(arr: T[], size: number): T[][] {
+  const result: T[][] = [];
+
+  for (let i = 0; i < arr.length; i += size) {
+    const bolak: T[] = arr.slice(i, i + size);
+    result.push(bolak);
+  }
+
+  return result;
+}
+
+console.log(bolakArray<number>([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3));
 // TASK V
 
 // Shunday function yozing, uni string parametri bo'lsin.
@@ -7,22 +26,22 @@
 // Yuqoridagi misolda, 'hello' so'zi tarkibida
 // qatnashgan harflar necha marotaba takrorlangini bilan
 // object sifatida qaytarilmoqda.
-function countChars(str: string): Record<string, number> {
-  const result: Record<string, number> = {};
+// function countChars(str: string): Record<string, number> {
+//   const result: Record<string, number> = {};
 
-  for (const char of str) {
-    if (result[char]) {
-      result[char]++;
-    } else {
-      result[char] = 1;
-    }
-  }
+//   for (const char of str) {
+//     if (result[char]) {
+//       result[char]++;
+//     } else {
+//       result[char] = 1;
+//     }
+//   }
 
-  return result;
-}
+//   return result;
+// }
 
-console.log(countChars("hello"));
-console.log(countChars("salom"));
+// console.log(countChars("hello"));
+// console.log(countChars("salom"));
 // Natija: { h: 1, e: 1, l: 2, o: 1 }//shunday function tuzing uni number parametri bolsin. va bu parametrgacha 0dan boshlab oraliqda nechta toq son borligini aniqlab return qilsin
 // function sumOdds(number: number): number {
 //   let count: number = 0;
