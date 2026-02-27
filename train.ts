@@ -1,3 +1,19 @@
+function countOccurrences(obj: unknown, key: string): number {
+  if (obj === null || typeof obj !== "object") return 0;
+
+  return Object.entries(obj as Record<string, unknown>).reduce(
+    (acc, [k, value]) =>
+      acc + (k === key ? 1 : 0) + countOccurrences(value, key),
+    0,
+  );
+}
+
+const result = countOccurrences(
+  { model: "Bugatti", steer: { model: "HANKOOK", size: 30 } },
+  "model",
+);
+
+console.log("model:", result); // 2
 // TASK W
 
 // Shunday function yozing, u o'ziga parametr sifatida
@@ -5,18 +21,18 @@
 // arrayni numberda berilgan uzunlikda kesib bo'laklarga
 // ajratgan holatida qaytarsin.
 
-function bolakArray<T>(arr: T[], size: number): T[][] {
-  const result: T[][] = [];
+// function bolakArray<T>(arr: T[], size: number): T[][] {
+//   const result: T[][] = [];
 
-  for (let i = 0; i < arr.length; i += size) {
-    const bolak: T[] = arr.slice(i, i + size);
-    result.push(bolak);
-  }
+//   for (let i = 0; i < arr.length; i += size) {
+//     const bolak: T[] = arr.slice(i, i + size);
+//     result.push(bolak);
+//   }
 
-  return result;
-}
+//   return result;
+// }
 
-console.log(bolakArray<number>([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3));
+//console.log(bolakArray<number>([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3));
 // TASK V
 
 // Shunday function yozing, uni string parametri bo'lsin.
