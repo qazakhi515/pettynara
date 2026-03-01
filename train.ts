@@ -1,20 +1,28 @@
-function countOccurrences(obj: unknown, key: string): number {
-  if (obj === null || typeof obj !== "object") return 0;
-
-  return Object.entries(obj as Record<string, unknown>).reduce(
-    (acc, [k, value]) =>
-      acc + (k === key ? 1 : 0) + countOccurrences(value, key),
-    0,
-  );
+function findIntersection(arr1: number[], arr2: number[]): number[] {
+  const oxshash = new Set(arr2);
+  const result = arr1.filter((value) => oxshash.has(value));
+  return [...new Set(result)];
 }
 
-const result = countOccurrences(
-  { model: "Bugatti", steer: { model: "HANKOOK", size: 30 } },
-  "model",
-);
+console.log(findIntersection([1, 2, 3], [3, 2, 0])); // [2, 3]
 
-console.log("model:", result); // 2
-// TASK W
+// function countOccurrences(obj: unknown, key: string): number {
+//   if (obj === null || typeof obj !== "object") return 0;
+
+//   return Object.entries(obj as Record<string, unknown>).reduce(
+//     (acc, [k, value]) =>
+//       acc + (k === key ? 1 : 0) + countOccurrences(value, key),
+//     0,
+//   );
+// }
+
+// const result = countOccurrences(
+//   { model: "Bugatti", steer: { model: "HANKOOK", size: 30 } },
+//   "model",
+// );
+
+// console.log("model:", result); // 2
+// // TASK W
 
 // Shunday function yozing, u o'ziga parametr sifatida
 // yagona array va number qabul qilsin. Siz tuzgan function
