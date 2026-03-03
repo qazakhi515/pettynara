@@ -1,7 +1,8 @@
 import { shapeIntoMongooseObjectId } from "../libs/config";
+import { OrderStatus } from "../libs/enums/order.enum";
 import Errors, { HttpCode, Message } from "../libs/Errors";
 import { Member } from "../libs/types/member";
-import { Order, OrderItemInput } from "../libs/types/order";
+import { Order, OrderInquiry, OrderItemInput } from "../libs/types/order";
 import OrderModel from "../schema/Order.model";
 import OrderItemModel from "../schema/OrderItem.model";
 import { ObjectId } from "mongoose";
@@ -53,6 +54,40 @@ class OrderService {
 
     const orderItemState = await Promise.all(promisedList);
     console.log("orderItemState", orderItemState);
+  }
+
+  public async getMyOrders(
+    member: Member,
+    inquriy: OrderInquiry,
+  ): Promise<Order[]> {
+    const memberId = shapeIntoMongooseObjectId(member._id);
+    const matches = { memberId: memberId, orderStatus: inquriy.orderStatus };
+    const result = await this.orderModel
+      .aggregate([
+        { $match: matches },
+        { $sort: { updatedAt: -1 } },
+        { $skip: (inquriy.page - 1) * inquriy.limit },
+        { $limit: inquriy.limit },
+        {
+          $lookup: {
+            from: "orderItems",
+            localField: "_id",
+            foreignField: "orderId",
+            as: "orderItems",
+          },
+        },
+        {
+          $lookup: {
+            from: "products",
+            localField: "orderItems.productId",
+            foreignField: "_id",
+            as: "productData",
+          },
+        },
+      ])
+      .exec();
+    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUNG);
+    return result;
   }
 }
 
