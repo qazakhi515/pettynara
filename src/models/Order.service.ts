@@ -53,13 +53,14 @@ class OrderService {
     orderId: ObjectId,
     input: OrderItemInput[],
   ): Promise<void> {
+    // void vaqti qiymat qaytarmaydi
     const promisedList = input.map(async (item: OrderItemInput) => {
+      // filter ishlatmimiz no orin , filter async bn ishlamaydi , promise ni tushinmaydi
       item.orderId = orderId;
       item.productId = shapeIntoMongooseObjectId(item.productId);
-      await this.orderItemModel.create(item);
-      return "INSERTED";
+      return await this.orderItemModel.create(item);
     });
-
+    console.log(promisedList);
     const orderItemState = await Promise.all(promisedList);
     console.log("orderItemState", orderItemState);
   }

@@ -24,7 +24,7 @@ orderController.createOrder = async (req: ExtendedRequest, res: Response) => {
 orderController.getMyOrders = async (req: ExtendedRequest, res: Response) => {
   try {
     console.log("getMyOrders");
-    const { page, limit, orderStatus } = req.query;
+    const { page, limit, orderStatus } = req.query; // destruction req.query ni yoyish bolyopti.
     const inquiry: OrderInquiry = {
       page: Number(page),
       limit: Number(limit),
