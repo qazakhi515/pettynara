@@ -1,10 +1,16 @@
-function findIntersection(arr1: number[], arr2: number[]): number[] {
-  const oxshash = new Set(arr2);
-  const result = arr1.filter((value) => oxshash.has(value));
-  return [...new Set(result)];
+function randomBetween(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-console.log(findIntersection([1, 2, 3], [3, 2, 0])); // [2, 3]
+console.log(randomBetween(40, 60));
+
+// function findIntersection(arr1: number[], arr2: number[]): number[] {
+//   const oxshash = new Set(arr2);
+//   const result = arr1.filter((value) => oxshash.has(value));
+//   return [...new Set(result)];
+// }
+
+// console.log(findIntersection([1, 2, 3], [3, 2, 0])); // [2, 3]
 
 // function countOccurrences(obj: unknown, key: string): number {
 //   if (obj === null || typeof obj !== "object") return 0;

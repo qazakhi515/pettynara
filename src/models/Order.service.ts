@@ -28,6 +28,7 @@ class OrderService {
   ): Promise<Order> {
     const memberId = shapeIntoMongooseObjectId(member._id);
     const amount = input.reduce((accumulator: number, item: OrderItemInput) => {
+      // iterate
       return accumulator + item.itemPrice * item.itemQuantity;
     }, 0);
     const delivery = amount < 100 ? 5 : 0;
@@ -55,13 +56,14 @@ class OrderService {
   ): Promise<void> {
     // void vaqti qiymat qaytarmaydi
     const promisedList = input.map(async (item: OrderItemInput) => {
+      // pending  qilyopti
       // filter ishlatmimiz no orin , filter async bn ishlamaydi , promise ni tushinmaydi
       item.orderId = orderId;
       item.productId = shapeIntoMongooseObjectId(item.productId);
       return await this.orderItemModel.create(item);
     });
     console.log(promisedList);
-    const orderItemState = await Promise.all(promisedList);
+    const orderItemState = await Promise.all(promisedList); // bunda pending larni bir qilib qaytarib beradi
     console.log("orderItemState", orderItemState);
   }
 
@@ -74,23 +76,34 @@ class OrderService {
     const result = await this.orderModel
       .aggregate([
         { $match: matches },
-        { $sort: { updatedAt: -1 } },
+        { $sort: { updatedAt: -1 } }, // descent, ascent, 1 osish kamayish
         { $skip: (inquriy.page - 1) * inquriy.limit },
-        { $limit: inquriy.limit },
+        { $limit: inquriy.limit }, // Order yaratadi Order1 Order2 Order3
         {
           $lookup: {
-            from: "orderItems",
-            localField: "_id",
-            foreignField: "orderId",
-            as: "orderItems",
+            localField: "_id", // Orderni _id si olin
+            from: "orderItems", // Order items collection ga borib
+            foreignField: "orderId", // OrderItems ni orderId si. ni olin order _id bn shuni solishtirib
+            as: "orderItems", // order Items nomi bn save qiladi
           },
         },
         {
           $lookup: {
-            from: "products",
+            // tepadagi order items ni ichiga kirish
             localField: "orderItems.productId",
+            from: "products",
             foreignField: "_id",
             as: "productData",
+          },
+        },
+
+        {
+          $lookup: {
+            // member ni nomini olish
+            localField: "memberId",
+            from: "members",
+            foreignField: "_id",
+            as: "memberData",
           },
         },
       ])
