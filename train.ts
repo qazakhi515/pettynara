@@ -1,3 +1,16 @@
+// TASK ZI Shundan function yozing, bu function 3 soniydan so'ng "Hello World!" so'zini qaytarsin.
+// MASALAN: delayHelloWorld("Hello World"); return "Hello World"; manashuni type script da tuzish kerak
+
+function HelloWorld(text: string): Promise<string> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(text);
+    }, 3000);
+  });
+}
+HelloWorld("Hello World!").then((result) => {
+  console.log(result);
+});
 // TASK ZD
 
 // Shunday function yozing. Bu function o'ziga, parametr sifatida
@@ -12,16 +25,16 @@
 // Bizning function uchinchi berilgan '2' raqamini shu '3' bilan almashtirib,
 // yangilangan arrayni qaytarmoqda.
 
-function changeNumberInArray(
-  index: number,
-  arr: number[],
-  newNumber: number,
-): number[] {
-  arr[index] = newNumber;
-  return arr;
-}
+// function changeNumberInArray(
+//   index: number,
+//   arr: number[],
+//   newNumber: number,
+// ): number[] {
+//   arr[index] = newNumber;
+//   return arr;
+// }
 
-console.log(changeNumberInArray(1, [1, 3, 7, 2], 2));
+// console.log(changeNumberInArray(1, [1, 3, 7, 2], 2));
 
 // function randomBetween(min: number, max: number): number {
 //   return Math.floor(Math.random() * (max - min + 1)) + min;
