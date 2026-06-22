@@ -48,7 +48,7 @@ Use those files as the source of truth for AI Agent related migration history, a
 4. Change one feature or page at a time.
 5. Keep backend and frontend changes separate when possible.
 6. Validate after important changes.
-7. Update docs after major completed work.
+7. Update `docs/ai/COMPLETED_TASKS.md` after major completed work.
 
 ### Validation
 
