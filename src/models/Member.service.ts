@@ -153,7 +153,7 @@ class MemberService {
       throw new Errors(HttpCode.UNAUTHORIZED, Message.WRONG_PASSWORD);
     }
 
-    return await this.memberModel.findById(member._id).exec(); //. 1.1 back end dan matija ni front end ga jonatib yuboryopmiz.
+    return await this.memberModel.findById(member._id).lean().exec(); //. 1.1 back end dan matija ni front end ga jonatib yuboryopmiz.
   }
 
   public async getUsers(): Promise<Member[]> {

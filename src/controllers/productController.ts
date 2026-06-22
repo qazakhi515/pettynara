@@ -25,6 +25,7 @@ productController.getProducts = async (req: Request, res: Response) => {
     if (search) inquiry.search = String(search);
     const result = await productService.getProducts(inquiry);
 
+    res.set("Cache-Control", "no-store");
     res.status(HttpCode.OK).json(result);
   } catch (err) {
     console.log("Error, getProducts:", err);
