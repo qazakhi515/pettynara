@@ -55,6 +55,6 @@ app.set("view engine", "ejs");
 app.use("/admin", routerAdmin); //EJS
 app.use("/", router); // React
 
-// Middleware Design Pattern.  Burak  ni back end qismini  React loyihaga rest api sifatida ishlatamiz
+// Middleware Design Pattern.  Pettynara  ni back end qismini  React loyihaga rest api sifatida ishlatamiz
 // back end loyihamizni adminka loyihasini traditional qurish sifatida ishlatamiz
 export default app; // common js da module.exports kabi qilinar edi esma js da esa export default boladi.
