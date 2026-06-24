@@ -8,17 +8,19 @@
     action="/admin/signup" method="POST" enctype="multipart/form-data">
       <div class="signup-frame" style="width: 650px">
         <div class="signup-top">
-          <span>Signup</span>
-          <div>Go back <a href="/admin" style="color: #6440fb">Home</a></div>
+          <p class="brand">Pettynara Admin</p>
+          <span>Create Pettynara Seller Account</span>
+          <p class="subtitle">Start managing pets and pet items today.</p>
+          <div>Go back <a href="/admin" style="color: #0f766e">Home</a></div>
           <p>
             Already signed up?
-            <a href="/admin/login" style="color: #6440fb">Login</a>
+            <a href="/admin/login" style="color: #0f766e">Login</a>
           </p>
         </div>
 
         <div class="sign-input-frame" style="justify-content: space-between">
           <div class="sign-up-frame">
-            <label>Restaurant *</label>
+            <label>Seller name *</label>
             <input
               type="text"
               name="memberNick"
@@ -65,7 +67,7 @@
           <div class="media-frame">
             <img class="upload-img-frame" src="/img/default.jpeg" />
             <div class="upload-container">
-              <span class="media-text">Product image</span>
+              <span class="media-text">Store image</span>
               <div
                 class="file-box bs3-primary preview-image"
                 style="margin-top: 25px; display: flex"
@@ -86,7 +88,7 @@
                 />
               </div>
               <p class="thumbnail-desc">
-                Please upload restaurant image.<br />
+                Please upload your store image.<br />
                 Attention only:.jpg, .jpeg, or .png. <br />
                 formats allowed!
               </p>
@@ -97,7 +99,7 @@
         <input name="memberType" value="RESTAURANT" hidden />
 
         <button class="signup-btn btn" name="signup" type="submit">
-          Signup
+          Create account
         </button>
       </div>
     </form>

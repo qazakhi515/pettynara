@@ -1,6 +1,6 @@
 ---
 name: pettynara-admin-auth-ui
-description: Use this skill when redesigning only the Pettynara Admin login and signup pages in the Burak EJS admin panel without changing backend routes, input names, controllers, schemas, or business logic.
+description: Use this skill when redesigning only the Pettynara Admin login and signup pages in the Burak EJS admin panel without changing backend routes, input names, controllers, schemas, services, or business logic.
 ---
 
 # Pettynara Admin Auth UI
