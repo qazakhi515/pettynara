@@ -4,77 +4,265 @@
 
 <body>
   <div class="home-container">
-    <div class="navigation-menu">
-      <ul class="nav justify-content-center">
-        <li class="nav-item" style="cursor: pointer">
-          <a class="nav-link active" href="/admin"><%= member ? 'Dashboard' : 'Home' %></a>
-        </li>
-        <% if(!member) { %>
-        <li class="nav-item" style="cursor: pointer">
+    <!-- 1. Top navigation -->
+    <header class="top-nav">
+      <div class="top-nav-inner">
+        <a class="nav-brand" href="/admin">
+          <svg class="nav-paw" viewBox="0 0 512 512" aria-hidden="true">
+            <ellipse cx="256" cy="340" rx="98" ry="80" />
+            <ellipse cx="150" cy="248" rx="44" ry="58" />
+            <ellipse cx="224" cy="188" rx="42" ry="58" />
+            <ellipse cx="300" cy="188" rx="42" ry="58" />
+            <ellipse cx="374" cy="248" rx="44" ry="58" />
+          </svg>
+          <span>Pettynara <strong>Admin</strong></span>
+        </a>
+        <nav class="nav-links">
+          <% if(!member) { %>
+          <a class="nav-link active" href="/admin">Home</a>
           <a class="nav-link" href="/admin/signup">Create account</a>
-        </li>
-        <li class="nav-item" style="cursor: pointer">
-          <a class="nav-link" href="/admin/login">Login</a>
-        </li>
-        <% } else { %>
-        <li class="nav-item" style="cursor: pointer">
+          <a class="nav-link nav-cta" href="/admin/login">Login</a>
+          <% } else { %>
+          <a class="nav-link active" href="/admin">Dashboard</a>
           <a class="nav-link" href="/admin/product/all">Pets &amp; Items</a>
-        </li>
-        <li class="nav-item" style="cursor: pointer">
           <a class="nav-link" href="/admin/user/all">Users</a>
-        </li>
-        <li
-          class="nav-item"
-          style="cursor: pointer"
-          onclick="return confirm('Do you want to logout?')"
-        >
-          <a class="nav-link" href="/admin/logout">Logout</a>
-        </li>
-        <% } %>
-      </ul>
-    </div>
-
-    <div class="dashboard">
-      <div class="dashboard-hero">
-        <p class="dashboard-brand">Pettynara Admin</p>
-        <h1>Welcome to Pettynara Admin</h1>
-        <p class="dashboard-subtitle">
-          Manage pets, pet items, sellers, and customer orders in one place.
-        </p>
+          <a
+            class="nav-link nav-cta"
+            href="/admin/logout"
+            onclick="return confirm('Do you want to logout?')"
+            >Logout</a
+          >
+          <% } %>
+        </nav>
       </div>
+    </header>
 
-      <div class="stat-grid">
-        <div class="stat-card">
-          <span class="stat-label">Pets</span>
+    <main class="dashboard">
+      <!-- 2. Hero section -->
+      <section class="hero">
+        <div class="hero-left">
+          <span class="hero-eyebrow">Pettynara Admin</span>
+          <h1 class="hero-title">Welcome to Pettynara Admin</h1>
+          <p class="hero-subtitle">
+            Manage pets, pet items, sellers, and customer orders from one smart
+            dashboard.
+          </p>
+          <div class="hero-actions">
+            <% if(!member) { %>
+            <a class="btn-solid" href="/admin/signup">Create account</a>
+            <a class="btn-ghost" href="/admin/login">Login</a>
+            <% } else { %>
+            <a class="btn-solid" href="/admin/product/all">Manage Pets &amp; Items</a>
+            <a class="btn-ghost" href="/admin/user/all">View Users</a>
+            <% } %>
+          </div>
         </div>
-        <div class="stat-card">
-          <span class="stat-label">Pet Items</span>
+        <div class="hero-right">
+          <div class="hero-image-card">
+            <img src="/img/pettynara/hero.jpg" alt="Happy pets" />
+          </div>
+          <div class="hero-mini-card">
+            <span class="mini-label">Store overview</span>
+            <div class="mini-row">
+              <span>Active listings</span>
+              <strong>128</strong>
+            </div>
+            <div class="mini-row">
+              <span>Sellers</span>
+              <strong>24</strong>
+            </div>
+            <div class="mini-bar"><span style="width: 72%"></span></div>
+            <span class="mini-foot">Inventory health 72%</span>
+          </div>
         </div>
-        <div class="stat-card">
-          <span class="stat-label">Users</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Orders</span>
-        </div>
-      </div>
+      </section>
 
-      <div class="category-section">
-        <h2 class="section-title">Categories</h2>
+      <!-- 3. Metric cards -->
+      <section class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-icon teal">
+            <svg viewBox="0 0 512 512" aria-hidden="true">
+              <ellipse cx="256" cy="340" rx="98" ry="80" />
+              <ellipse cx="150" cy="248" rx="44" ry="58" />
+              <ellipse cx="224" cy="188" rx="42" ry="58" />
+              <ellipse cx="300" cy="188" rx="42" ry="58" />
+              <ellipse cx="374" cy="248" rx="44" ry="58" />
+            </svg>
+          </div>
+          <div class="metric-text">
+            <span class="metric-title">Pets</span>
+            <span class="metric-help">Live pet listings in the store</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon amber">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 8l-9-5-9 5 9 5 9-5z" />
+              <path d="M3 8v8l9 5 9-5V8" />
+              <path d="M12 13v8" />
+            </svg>
+          </div>
+          <div class="metric-text">
+            <span class="metric-title">Pet Items</span>
+            <span class="metric-help">Food, toys, cages & accessories</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon coral">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="9" cy="8" r="4" />
+              <path d="M2 21c0-4 3.5-6 7-6s7 2 7 6" />
+              <path d="M17 4a4 4 0 0 1 0 8" />
+              <path d="M22 21c0-3-1.5-5-4-5.5" />
+            </svg>
+          </div>
+          <div class="metric-text">
+            <span class="metric-title">Users</span>
+            <span class="metric-help">Customers & seller accounts</span>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-icon green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.6 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
+            </svg>
+          </div>
+          <div class="metric-text">
+            <span class="metric-title">Orders</span>
+            <span class="metric-help">Customer orders to review</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Pet category cards -->
+      <section class="section-block">
+        <div class="section-head">
+          <h2>Pet Categories</h2>
+          <p>Browse the marketplace by category.</p>
+        </div>
         <div class="category-grid">
-          <div class="category-card">Dogs</div>
-          <div class="category-card">Cats</div>
-          <div class="category-card">Birds</div>
-          <div class="category-card">Fish</div>
-          <div class="category-card">Rabbits</div>
-          <div class="category-card">Accessories</div>
+          <div class="category-card">
+            <div class="category-thumb">
+              <img src="/img/pettynara/dogs.jpg" alt="Dogs" />
+            </div>
+            <div class="category-body">
+              <span class="category-name">Dogs</span>
+              <span class="category-sub">Food, toys & care</span>
+            </div>
+          </div>
+          <div class="category-card">
+            <div class="category-thumb">
+              <img src="/img/pettynara/cats.jpg" alt="Cats" />
+            </div>
+            <div class="category-body">
+              <span class="category-name">Cats</span>
+              <span class="category-sub">Litter, toys & treats</span>
+            </div>
+          </div>
+          <div class="category-card">
+            <div class="category-thumb">
+              <img src="/img/pettynara/birds.jpg" alt="Birds" />
+            </div>
+            <div class="category-body">
+              <span class="category-name">Birds</span>
+              <span class="category-sub">Cages & feed</span>
+            </div>
+          </div>
+          <div class="category-card">
+            <div class="category-thumb">
+              <img src="/img/pettynara/fish.jpg" alt="Fish" />
+            </div>
+            <div class="category-body">
+              <span class="category-name">Fish</span>
+              <span class="category-sub">Aquariums & care</span>
+            </div>
+          </div>
+          <div class="category-card">
+            <div class="category-thumb">
+              <img src="/img/pettynara/rabbits.jpg" alt="Rabbits" />
+            </div>
+            <div class="category-body">
+              <span class="category-name">Rabbits</span>
+              <span class="category-sub">Hutches & hay</span>
+            </div>
+          </div>
+          <div class="category-card">
+            <div class="category-thumb">
+              <img src="/img/pettynara/accessories.jpg" alt="Accessories" />
+            </div>
+            <div class="category-body">
+              <span class="category-name">Accessories</span>
+              <span class="category-sub">Collars, bowls & more</span>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div class="quick-actions">
-        <a class="quick-action-btn" href="/admin/product/all">Manage Pets &amp; Items</a>
-        <a class="quick-action-btn secondary" href="/admin/user/all">View Users</a>
-      </div>
-    </div>
+      <!-- 5. Quick action cards -->
+      <section class="section-block">
+        <div class="section-head">
+          <h2>Quick Actions</h2>
+          <p>Jump straight into managing your store.</p>
+        </div>
+        <div class="quick-grid">
+          <a class="quick-card" href="/admin/product/all">
+            <div class="quick-icon teal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 8l-9-5-9 5 9 5 9-5z" />
+                <path d="M3 8v8l9 5 9-5V8" />
+              </svg>
+            </div>
+            <span class="quick-title">Manage Pets &amp; Items</span>
+            <span class="quick-sub">Add, edit and update listings</span>
+          </a>
+          <a class="quick-card" href="/admin/user/all">
+            <div class="quick-icon amber">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="9" cy="8" r="4" />
+                <path d="M2 21c0-4 3.5-6 7-6s7 2 7 6" />
+                <path d="M17 4a4 4 0 0 1 0 8" />
+              </svg>
+            </div>
+            <span class="quick-title">View Users</span>
+            <span class="quick-sub">Manage customers & sellers</span>
+          </a>
+          <div class="quick-card disabled" aria-disabled="true">
+            <div class="quick-icon coral">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.6 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
+              </svg>
+            </div>
+            <span class="quick-title">Review Orders</span>
+            <span class="quick-sub">Coming soon</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Recent activity panel -->
+      <section class="activity-panel">
+        <div class="section-head">
+          <h2>Recent Activity</h2>
+        </div>
+        <ul class="activity-list">
+          <li>
+            <span class="activity-dot teal"></span>
+            New pet listings are ready to be reviewed.
+          </li>
+          <li>
+            <span class="activity-dot amber"></span>
+            Seller accounts can be managed from Users.
+          </li>
+          <li>
+            <span class="activity-dot green"></span>
+            Pet item inventory can be updated from Pets &amp; Items.
+          </li>
+        </ul>
+      </section>
+    </main>
   </div>
 </body>
 

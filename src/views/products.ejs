@@ -7,10 +7,10 @@
     <div class="navigation-menu">
       <ul class="nav justify-content-center">
         <li class="nav-item" style="cursor: pointer">
-          <a class="nav-link active" href="/admin/">Home</a>
+          <a class="nav-link active" href="/admin/">Dashboard</a>
         </li>
         <li class="nav-item" style="cursor: pointer">
-          <a class="nav-link" href="/admin/product/all">Menu</a>
+          <a class="nav-link" href="/admin/product/all">Pets &amp; Items</a>
         </li>
         <li class="nav-item" style="cursor: pointer">
           <a class="nav-link" href="/admin/user/all">Users</a>
@@ -29,43 +29,43 @@
       <div class="board">
         <div class="dishes-table">
           <span class="new-dish-txt" style="margin-bottom: 30px">
-            RESTAURANT MENU
+            Pet Listings
           </span>
           <table class="table table-bordered table-hover">
             <thead class="thead-light">
               <tr class="thead-light">
-                <th scope="col">T/r</th>
-                <th scope="col">Product Name</th>
-                <th scope="col">Product Type</th>
-                <th scope="col">Product Volume</th>
-                <th scope="col">Product Price</th>
-                <th scope="col">Product Left Count</th>
+                <th scope="col">No</th>
+                <th scope="col">Name</th>
+                <th scope="col">Category</th>
+                <th scope="col">Type / Size</th>
+                <th scope="col">Price</th>
+                <th scope="col">Stock</th>
                 <th scope="col">Status</th>
               </tr>
             </thead>
             <!--  LOOP PRODUCTS: START  -->
-
-            <% products.map(function (value, key) { %>
-                          <tbody style="background: white">
-              <td><%= key+1 %></td>
-              <td><%= value.productName %></td>
-              <td><%= value.productCollection %></td>
-              <td><%= value.productCollection === 'DRINK' ? value.productVolume :
-                  value.productSize %></td>
-              <td><%= value.productPrice %></td>
-              <td><%= value.productLeftCount %></td>
-              <td>
-                <select class="spec-select new-product-status" 
-                id="<%= value._id %>"
-                >
-                  <option value="PAUSE" <%= value.productStatus === 'PAUSE'? 'selected': '' %> >PAUSE</option>
-                  <option value="PROCESS" <%= value.productStatus === 'PROCESS'? 'selected': '' %> >PROCESS</option>
-                  <option value="DELETE" <%= value.productStatus === 'DELETE'? 'selected': '' %> >DELETE</option>
-                </select>
-              </td>
+            <tbody style="background: white">
+              <% products.map(function (value, key) { %>
+              <tr>
+                <td><%= key+1 %></td>
+                <td><%= value.productName %></td>
+                <td><%= value.productCollection %></td>
+                <td><%= value.productCollection === 'DRINK' ? value.productVolume :
+                    value.productSize %></td>
+                <td><%= value.productPrice %></td>
+                <td><%= value.productLeftCount %></td>
+                <td>
+                  <select class="spec-select new-product-status"
+                  id="<%= value._id %>"
+                  >
+                    <option value="PAUSE" <%= value.productStatus === 'PAUSE'? 'selected': '' %> >PAUSE</option>
+                    <option value="PROCESS" <%= value.productStatus === 'PROCESS'? 'selected': '' %> >PROCESS</option>
+                    <option value="DELETE" <%= value.productStatus === 'DELETE'? 'selected': '' %> >DELETE</option>
+                  </select>
+                </td>
+              </tr>
+              <% })%>
             </tbody>
-
-             <% })%>
             <!--  LOOP PRODUCTS: END  -->
           </table>
           <div
@@ -73,7 +73,7 @@
             style="align-items: flex-end; margin-bottom: 25px"
           >
             <button class="btn btn-primary" id="process-btn">
-              New Product
+              Add New Pet / Item
             </button>
           </div>
         </div>
@@ -85,11 +85,11 @@
           enctype="multipart/form-data"
         >
           <div class="long-input" style="display: flex; align-items: center">
-            <span class="new-dish-txt">NEW PRODUCT DETAIL</span>
+            <span class="new-dish-txt">Add New Pet / Item</span>
           </div>
           <div class="login-input-frame">
             <div class="long-input">
-              <label>Product Name</label>
+              <label>Pet / Item Name</label>
               <input
                 type="text"
                 placeholder="Name"
@@ -106,7 +106,7 @@
           </div>
           <div class="half-input-frame">
             <div class="half-input">
-              <label>Product Price</label>
+              <label>Price</label>
               <input
                 type="number"
                 placeholder="Price"
@@ -115,10 +115,10 @@
               />
             </div>
             <div class="half-input">
-              <label>Product Left Counts</label>
+              <label>Stock</label>
               <input
                 type="number"
-                placeholder="Counts"
+                placeholder="Stock"
                 name="productLeftCount"
                 class="product-left-count"
               />
@@ -126,18 +126,18 @@
           </div>
           <div class="half-input-frame">
             <div class="half-input">
-              <label>Product Type</label>
+              <label>Category</label>
               <select class="product-collection" name="productCollection">
-                <option value="DISH" selected>Dish</option>
-                <option value="SALAD">Salad</option>
-                <option value="DESSERT">Dessert</option>
-                <option value="DRINK">Drink</option>
-                <option value="OTHER">Other</option>
+                <option value="DISH" selected>Dog</option>
+                <option value="SALAD">Cat</option>
+                <option value="DESSERT">Bird</option>
+                <option value="DRINK">Fish</option>
+                <option value="OTHER">Rabbit / Item</option>
               </select>
             </div>
 
             <div class="half-input" id="product-collection">
-              <label>Dish Volume</label>
+              <label>Size / Type</label>
               <select class="product-size" name="productSize">
                 <option value="SMALL">Small</option>
                 <option value="NORMAL" selected>Normal</option>
@@ -147,7 +147,7 @@
             </div>
 
             <div class="half-input" id="product-volume" style="display: none">
-              <label>Drink Volume</label>
+              <label>Volume</label>
               <select class="product-volume" name="productVolume">
                 <option value="0.5">0,5 liters</option>
                 <option value="1" selected>1 liters</option>
@@ -158,12 +158,12 @@
             </div>
           </div>
           <div class="long-input">
-            <label>Product Description</label>
+            <label>Description</label>
             <textarea name="productDesc" class="product-desc"></textarea>
           </div>
 
           <div class="img-frame">
-            <label>Product Images</label>
+            <label>Upload Images</label>
             <div class="media-frame">
               <div class="upload-img-box">
                 <img src="/img/upload.svg" class="1" id="image-section-1" />

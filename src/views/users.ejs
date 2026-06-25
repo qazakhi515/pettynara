@@ -11,7 +11,7 @@
           <a class="nav-link active" href="/admin/">Home</a>
         </li>
         <li class="nav-item" style="cursor: pointer">
-          <a class="nav-link" href="/admin/signup">SignUp</a>
+          <a class="nav-link" href="/admin/signup">Create account</a>
         </li>
         <li class="nav-item" style="cursor: pointer">
           <a class="nav-link" href="/admin/login">Login</a>
@@ -19,18 +19,22 @@
       </ul>
     </div>
 
-    <div class="users-frame" style="color: #dddddd">
-      <div class="board" style="font-size: 40px">Please login first!</div>
+    <div class="users-frame">
+      <div class="board">
+        <div class="login-required">
+          Please login to manage Pettynara users and sellers.
+        </div>
+      </div>
     </div>
 
     <% } else { %>
     <div class="navigation-menu">
       <ul class="nav justify-content-center">
         <li class="nav-item" style="cursor: pointer">
-          <a class="nav-link active" href="/admin/">Home</a>
+          <a class="nav-link active" href="/admin/">Dashboard</a>
         </li>
         <li class="nav-item" style="cursor: pointer">
-          <a class="nav-link" href="/admin/product/all">Menu</a>
+          <a class="nav-link" href="/admin/product/all">Pets &amp; Items</a>
         </li>
         <li class="nav-item" style="cursor: pointer">
           <a class="nav-link" href="/admin/user/all">Users</a>
@@ -48,8 +52,9 @@
     <div class="users-frame">
       <div class="board">
         <div class="user-table">
-          <span class="header-name" style="margin-bottom: 30px"
-            >All Users List</span
+          <span class="header-name">Users / Sellers</span>
+          <span class="header-subtitle"
+            >Manage customer and seller access for Pettynara.</span
           >
           <table class="table table-hover table-sm">
             <thead class="thead-light">
@@ -60,22 +65,22 @@
                 <th scope="col">Status</th>
               </tr>
             </thead>
-            <%  users.map(function (value, index){ %>
             <tbody style="background: white">
-              <td><%= index+1 %></td>
-              <td><%= value.memberNick %></td>
-              <td><%= value.memberPhone %></td>
-              <td style="width: 13%">
-                <select class="spec-select member-status" id="<%= value._id%>">
-                  <option value="ACTIVE" <%= value.memberStatus === 'ACTIVE' ? 'selected': '' %> >ACTIVE</option>
-                  <option value="BLOCK" <%= value.memberStatus === 'BLOCK' ? 'selected': '' %> >BLOCK</option>
-                  <option value="DELETE" <%= value.memberStatus === 'DELETE' ? 'selected': '' %> >DELETE</option>
-                </select>
-              </td>
+              <%  users.map(function (value, index){ %>
+              <tr>
+                <td><%= index+1 %></td>
+                <td><%= value.memberNick %></td>
+                <td><%= value.memberPhone %></td>
+                <td style="width: 13%">
+                  <select class="spec-select member-status" id="<%= value._id%>">
+                    <option value="ACTIVE" <%= value.memberStatus === 'ACTIVE' ? 'selected': '' %> >ACTIVE</option>
+                    <option value="BLOCK" <%= value.memberStatus === 'BLOCK' ? 'selected': '' %> >BLOCK</option>
+                    <option value="DELETE" <%= value.memberStatus === 'DELETE' ? 'selected': '' %> >DELETE</option>
+                  </select>
+                </td>
+              </tr>
+              <% }) %>
             </tbody>
-             <% }) %>
-
-            
           </table>
         </div>
       </div>

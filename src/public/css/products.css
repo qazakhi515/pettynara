@@ -6,29 +6,41 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: linear-gradient(-45deg, #110303bf, #e37813, #011c1aba, #968383);
+  background: #f4f1ea;
+  padding-bottom: 60px;
 }
 
 .products-container a {
   text-decoration: none;
-  color: #000000;
+  color: #0f766e;
 }
 
 .products-container .nav-item a {
-  color: #e3c08d;
+  color: #0f766e;
+  font-family: "Poppins", sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  padding: 10px 18px;
+  transition: color 0.2s ease;
+}
+
+.products-container .nav-item a:hover {
+  color: #0c5d56;
+}
+
+.products-container .nav-item a.active {
+  color: #1f2937;
 }
 
 .products-container .nav-item a.disabled {
-  color: #898071;
+  color: #9aa1ab;
 }
 
 .products-container .navigation-menu {
-  position: absolute;
-  z-index: 10000;
-  top: 1%;
-  color: #efefee;
-  font-size: 40px;
-  font-family: monospace;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  margin-top: 18px;
 }
 
 .products-container .restaurant-menu-frame {
@@ -36,7 +48,6 @@
   padding-bottom: 80px;
   width: 100%;
   height: auto;
-
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -44,8 +55,9 @@
 
 .products-container .restaurant-menu-frame .board {
   position: relative;
-  margin-top: 100px;
+  margin-top: 30px;
   width: 1320px;
+  max-width: 95%;
   height: auto;
   display: flex;
   flex-direction: column;
@@ -56,31 +68,41 @@
   position: relative;
   width: 100%;
   height: auto;
-  margin-top: 30px;
+  margin-top: 10px;
+  padding: 28px 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  background: #ffffff;
+  border: 1px solid #ece8df;
+  border-radius: 8px;
+  box-shadow: 0px 14px 36px rgba(15, 118, 110, 0.08);
 }
 
 .products-container .board .dish-container {
   position: relative;
-  margin-top: 20px;
+  margin-top: 24px;
   width: 100%;
   height: auto;
 
-  
+  /* keep hidden by default — products.js slideToggle reveals it */
   display: none;
   flex-direction: column;
   align-items: center;
+  padding: 28px 32px;
+  background: #ffffff;
+  border: 1px solid #ece8df;
+  border-radius: 8px;
+  box-shadow: 0px 14px 36px rgba(15, 118, 110, 0.08);
 }
 
 .products-container .new-dish-txt {
-  font-family: "Source Serif Pro";
+  font-family: "Poppins", sans-serif;
   font-style: normal;
-  font-weight: 400;
-  font-size: 30px;
-  line-height: 25px;
-  color: #ffffff;
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 32px;
+  color: #1f2937;
 }
 
 .products-container .long-input {
@@ -92,92 +114,88 @@
   flex-direction: column;
 }
 
-.products-container .long-input label {
-  font-family: "Source Serif Pro";
+.products-container .long-input label,
+.products-container .half-input label,
+.products-container .img-frame label {
+  font-family: "Poppins", sans-serif;
   font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 25px;
-  color: #ffffff;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 22px;
+  color: #374151;
 }
 
-.products-container .long-input input {
+.products-container .long-input input,
+.products-container .half-input input {
   position: relative;
-  margin-top: 10px;
-  padding-left: 20px;
+  margin-top: 8px;
+  padding-left: 16px;
   width: 100%;
-  height: 54px;
-  border: none;
-  background: #f7f7f7;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 5px;
-  font-family: "GT Walsheim Pro";
+  height: 52px;
+  border: 1px solid #e2ddd2;
+  background: #faf9f5;
+  box-shadow: none;
+  border-radius: 8px;
+  font-family: "Poppins", sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 15px;
   line-height: 26px;
-  color: #4f547b;
+  color: #1f2937;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.products-container .long-input input:focus,
+.products-container .half-input input:focus,
+.products-container .long-input textarea:focus,
+.products-container .half-input select:focus,
+.products-container .long-input select:focus {
+  outline: none;
+  border-color: #0f766e;
+  box-shadow: 0px 0px 0px 3px rgba(15, 118, 110, 0.12);
 }
 
 .products-container .long-input textarea {
   position: relative;
-  margin-top: 10px;
-  padding: 20px;
+  margin-top: 8px;
+  padding: 16px;
   width: 100%;
-  height: 200px;
-  border: none;
-  background: #f7f7f7;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 5px;
-  font-family: "GT Walsheim Pro";
+  height: 180px;
+  border: 1px solid #e2ddd2;
+  background: #faf9f5;
+  box-shadow: none;
+  border-radius: 8px;
+  font-family: "Poppins", sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 15px;
   line-height: 26px;
-  color: #4f547b;
+  color: #1f2937;
 }
 
-.products-container .half-input select {
+.products-container .half-input select,
+.products-container .long-input select {
   position: relative;
-  margin-top: 10px;
-  padding: 0px 20px;
+  margin-top: 8px;
+  padding: 0px 16px;
   width: 100%;
-  height: 55px;
+  height: 52px;
   display: flex;
-  border: none;
-  background: #f7f7f7;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 5px;
-  font-family: "GT Walsheim Pro";
+  border: 1px solid #e2ddd2;
+  background: #faf9f5;
+  box-shadow: none;
+  border-radius: 8px;
+  font-family: "Poppins", sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 15px;
   line-height: 26px;
-  color: #4f547b;
+  color: #1f2937;
 }
 
 .products-container select:focus {
   min-width: 100%;
   width: auto;
-}
-
-.products-container .long-input select {
-  position: relative;
-  margin-top: 10px;
-  padding: 0px 20px;
-  width: 100%;
-  height: 55px;
-  display: flex;
-  border: none;
-  background: #f7f7f7;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 5px;
-  font-family: "GT Walsheim Pro";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 15px;
-  line-height: 26px;
-  color: #4f547b;
 }
 
 .products-container .dish-container .half-input-frame {
@@ -188,6 +206,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  gap: 16px;
 }
 
 .products-container .half-input-frame .half-input {
@@ -198,35 +217,15 @@
   flex-direction: column;
 }
 
-.products-container .half-input label {
-  font-family: "Source Serif Pro";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 25px;
-  color: #ffffff;
-}
-
-.products-container .half-input input {
-  position: relative;
-  margin-top: 10px;
-  padding-left: 20px;
-  width: 100%;
-  height: 54px;
-  border: none;
-  background: #f7f7f7;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 5px;
-}
-
 .products-container .media-frame {
   position: relative;
-  margin-top: 10px;
+  margin-top: 12px;
   width: 100%;
-  height: 250px;
+  height: 200px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  gap: 14px;
 }
 
 .products-container .media-frame .upload-img-box {
@@ -236,8 +235,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 10px;
+  border-radius: 8px;
+  border: 1px dashed #cdc7ba;
+  background: #fef9f0;
   cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.products-container .media-frame .upload-img-box:hover {
+  border-color: #0f766e;
+  background: #f0fdfa;
 }
 
 .products-container .upload-img-box img {
@@ -245,7 +252,8 @@
   width: 100%;
   height: 100%;
   display: block;
-  border-radius: 10px;
+  border-radius: 8px;
+  object-fit: cover;
 }
 
 .products-container .img-frame {
@@ -253,22 +261,17 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  margin-top: 25px;
 }
 
 .products-container .img-frame label {
-  margin-top: 30px;
-  font-family: "Source Serif Pro";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 25px;
-  color: #ffffff;
+  margin-bottom: 4px;
 }
 
 .products-container #file {
   opacity: 0;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   background: grey;
   position: absolute;
   left: 0px;
@@ -279,26 +282,39 @@
 }
 
 .products-container .operation-buttons {
-  margin-top: 20px;
+  margin-top: 28px;
+  width: 100%;
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
+  gap: 14px;
 }
 
-.products-container .spec-select {
-  position: relative;
-  padding: 0px 7px;
-  height: 27px;
+.products-container #process-btn,
+.products-container #create-btn {
+  background: #0f766e;
+  border-color: #0f766e;
+}
+
+.products-container #process-btn:hover,
+.products-container #create-btn:hover {
+  background: #0c5d56;
+  border-color: #0c5d56;
+}
+
+/* Table */
+.products-container table {
+  width: 100%;
   background: #ffffff;
-  border: 1px solid #dddddd;
-  border-radius: 8px;
-  font-family: "GT Walsheim Pro";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 15px;
-  line-height: 26px;
-  color: #4f547b;
+}
+
+.products-container .thead-light th {
+  background: #f0fdfa;
+  color: #0f766e;
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  border-color: #e2ddd2;
 }
 
 .products-container table td,
@@ -307,6 +323,27 @@ table th {
   vertical-align: middle;
 }
 
+.products-container .spec-select {
+  position: relative;
+  padding: 0px 7px;
+  height: 30px;
+  background: #ffffff;
+  border: 1px solid #cdc7ba;
+  border-radius: 8px;
+  font-family: "Poppins", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 26px;
+  color: #1f2937;
+}
+
+.products-container .spec-select:focus {
+  outline: none;
+  border-color: #0f766e;
+}
+
+/* Toggle switch (kept from original) */
 .products-container .switch {
   position: relative;
   display: inline-block;
@@ -345,11 +382,11 @@ table th {
 }
 
 .products-container input:checked + .slider {
-  background-color: #2196f3;
+  background-color: #0f766e;
 }
 
 .products-container input:focus + .slider {
-  box-shadow: 0 0 1px #2196f3;
+  box-shadow: 0 0 1px #0f766e;
 }
 
 .products-container input:checked + .slider:before {

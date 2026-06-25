@@ -4,6 +4,26 @@
 
 <body>
   <div class="signup-container">
+    <header class="auth-nav">
+      <div class="auth-nav-inner">
+        <a class="auth-nav-brand" href="/admin">
+          <svg class="auth-nav-paw" viewBox="0 0 512 512" aria-hidden="true">
+            <ellipse cx="256" cy="340" rx="98" ry="80" />
+            <ellipse cx="150" cy="248" rx="44" ry="58" />
+            <ellipse cx="224" cy="188" rx="42" ry="58" />
+            <ellipse cx="300" cy="188" rx="42" ry="58" />
+            <ellipse cx="374" cy="248" rx="44" ry="58" />
+          </svg>
+          <span>Pettynara <strong>Admin</strong></span>
+        </a>
+        <nav class="auth-nav-links">
+          <a class="auth-nav-link" href="/admin">Home</a>
+          <a class="auth-nav-link active" href="/admin/signup">Create account</a>
+          <a class="auth-nav-link auth-nav-cta" href="/admin/login">Login</a>
+        </nav>
+      </div>
+    </header>
+
     <form onsubmit="return validateSignupForm()"
     action="/admin/signup" method="POST" enctype="multipart/form-data">
       <div class="signup-frame" style="width: 650px">
@@ -11,11 +31,6 @@
           <p class="brand">Pettynara Admin</p>
           <span>Create Pettynara Seller Account</span>
           <p class="subtitle">Start managing pets and pet items today.</p>
-          <div>Go back <a href="/admin" style="color: #0f766e">Home</a></div>
-          <p>
-            Already signed up?
-            <a href="/admin/login" style="color: #0f766e">Login</a>
-          </p>
         </div>
 
         <div class="sign-input-frame" style="justify-content: space-between">

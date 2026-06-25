@@ -3,47 +3,123 @@
 <link rel="stylesheet" type="text/css" href="/css/login.css" />
 
 <body>
-  <form class="login-container" action="/admin/login" METHOD="POST">
-    <div class="login-frame">
-      <div class="login-top">
-        <p class="brand">Pettynara Admin</p>
-        <span>Seller Login</span>
-        <p class="subtitle">
-          Manage pets, pet items, and customer orders from one dashboard.
-        </p>
-        <div>Go back <a href="/admin" style="color: #0f766e">Home</a></div>
-        <p>
-          Not registered yet?
-          <a href="/admin/signup" style="color: #0f766e">Create account</a>
-        </p>
+  <div class="auth-page">
+    <header class="auth-nav">
+      <div class="auth-nav-inner">
+        <a class="auth-nav-brand" href="/admin">
+          <svg class="auth-nav-paw" viewBox="0 0 512 512" aria-hidden="true">
+            <ellipse cx="256" cy="340" rx="98" ry="80" />
+            <ellipse cx="150" cy="248" rx="44" ry="58" />
+            <ellipse cx="224" cy="188" rx="42" ry="58" />
+            <ellipse cx="300" cy="188" rx="42" ry="58" />
+            <ellipse cx="374" cy="248" rx="44" ry="58" />
+          </svg>
+          <span>Pettynara <strong>Admin</strong></span>
+        </a>
+        <nav class="auth-nav-links">
+          <a class="auth-nav-link" href="/admin">Home</a>
+          <a class="auth-nav-link active" href="/admin/login">Login</a>
+          <a class="auth-nav-link auth-nav-cta" href="/admin/signup">Create account</a>
+        </nav>
       </div>
-      <div class="login-input-frame">
-        <div class="login-input-container">
-          <label>Seller name *</label>
-          <input
-            type="text"
-            name="memberNick"
-            class="member-nick"
-            placeholder="Username"
-            value=""
-            required
-          />
-        </div>
-        <div class="login-input-container">
-          <label>Password *</label>
-          <input
-            type="password"
-            name="memberPassword"
-            class="member-password"
-            placeholder="Password"
-            value=""
-            required
-          />
-        </div>
+    </header>
+
+    <div class="auth-content">
+      <div class="auth-brand">
+        <svg class="paw-logo" viewBox="0 0 512 512" aria-hidden="true">
+          <ellipse cx="256" cy="340" rx="98" ry="80" />
+          <ellipse cx="150" cy="248" rx="44" ry="58" />
+          <ellipse cx="224" cy="188" rx="42" ry="58" />
+          <ellipse cx="300" cy="188" rx="42" ry="58" />
+          <ellipse cx="374" cy="248" rx="44" ry="58" />
+        </svg>
+        <h1 class="brand-title">Pettynara <span class="brand-accent">Admin</span></h1>
+        <p class="brand-subtitle">Manage pets, pet items, and orders with ease.</p>
       </div>
-      <button class="login-btn btn" name="login" type="submit">Login</button>
+
+      <form class="auth-card" action="/admin/login" METHOD="POST">
+        <h2 class="auth-card-title">Seller Login</h2>
+
+        <div class="field">
+          <label>Seller name</label>
+          <div class="input-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+            </svg>
+            <input
+              type="text"
+              name="memberNick"
+              class="member-nick"
+              placeholder="Enter seller name"
+              value=""
+              required
+            />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <div class="input-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="4" y="11" width="16" height="10" rx="2" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
+            <input
+              type="password"
+              name="memberPassword"
+              class="member-password"
+              id="passwordInput"
+              placeholder="Enter password"
+              value=""
+              required
+            />
+            <button
+              type="button"
+              class="toggle-password"
+              onclick="togglePassword()"
+              aria-label="Show password"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn-primary-auth" name="login" type="submit">Login</button>
+
+        <div class="divider"><span>or</span></div>
+
+        <a href="/admin/signup" class="btn-outline-auth">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
+          </svg>
+          Create account
+        </a>
+
+        <p class="auth-foot">
+          Don't have an account?
+          <a href="/admin/signup">Create account</a>
+        </p>
+      </form>
     </div>
-  </form>
+
+    <div class="auth-hero">
+      <img src="/img/pets-hero.png" alt="Pets" />
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    function togglePassword() {
+      var input = document.getElementById("passwordInput");
+      if (input) {
+        input.type = input.type === "password" ? "text" : "password";
+      }
+    }
+  </script>
 </body>
 
 <%- include('includes/footer') %>
