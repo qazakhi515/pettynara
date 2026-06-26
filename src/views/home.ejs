@@ -207,7 +207,7 @@
           <p>Jump straight into managing your store.</p>
         </div>
         <div class="quick-grid">
-          <a class="quick-card" href="/admin/product/all">
+          <a class="quick-card" href="/admin/product/all"<% if(!member) { %> onclick="requireLogin(event)"<% } %>>
             <div class="quick-icon teal">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M21 8l-9-5-9 5 9 5 9-5z" />
@@ -217,7 +217,7 @@
             <span class="quick-title">Manage Pets &amp; Items</span>
             <span class="quick-sub">Add, edit and update listings</span>
           </a>
-          <a class="quick-card" href="/admin/user/all">
+          <a class="quick-card" href="/admin/user/all"<% if(!member) { %> onclick="requireLogin(event)"<% } %>>
             <div class="quick-icon amber">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <circle cx="9" cy="8" r="4" />
@@ -264,6 +264,30 @@
       </section>
     </main>
   </div>
+
+  <!-- Login-required toast -->
+  <div id="login-toast" class="login-toast" role="alert" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+    <span>Please Login First</span>
+  </div>
+
+  <script>
+    function requireLogin(event) {
+      event.preventDefault();
+      const toast = document.getElementById("login-toast");
+      toast.classList.add("show");
+      toast.setAttribute("aria-hidden", "false");
+      clearTimeout(window.__loginToastTimer);
+      window.__loginToastTimer = setTimeout(function () {
+        toast.classList.remove("show");
+        toast.setAttribute("aria-hidden", "true");
+      }, 2500);
+    }
+  </script>
 </body>
 
 <%- include('includes/footer') %>

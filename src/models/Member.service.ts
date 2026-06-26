@@ -20,7 +20,7 @@ class MemberService {
   /* SPA */
   public async getRestaurant(): Promise<Member> {
     const result = await this.memberModel
-      .findOne({ memberType: MemberType.RESTAURANT })
+      .findOne({ memberType: MemberType.ADMIN })
       .lean()
       .exec();
 
@@ -118,7 +118,7 @@ class MemberService {
 
   public async processSignup(input: MemberInput): Promise<Member> {
     const exist = await this.memberModel
-      .findOne({ memberType: MemberType.RESTAURANT })
+      .findOne({ memberType: MemberType.ADMIN })
       .exec();
     if (exist) throw new Errors(HttpCode.BAD_REQUEST, Message.CREATE_FAILED);
 
