@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Pettynara">
+  <defs>
+    <linearGradient id="pnPaw" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#25a862" />
+      <stop offset="1" stop-color="#143a34" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="512" height="512" rx="120" fill="url(#pnPaw)" />
+  <g fill="#ffffff">
+    <ellipse cx="256" cy="330" rx="92" ry="76" />
+    <ellipse cx="156" cy="244" rx="41" ry="54" />
+    <ellipse cx="226" cy="188" rx="39" ry="54" />
+    <ellipse cx="286" cy="188" rx="39" ry="54" />
+    <ellipse cx="356" cy="244" rx="41" ry="54" />
+  </g>
+</svg>

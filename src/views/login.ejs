@@ -19,7 +19,9 @@
         <nav class="auth-nav-links">
           <a class="auth-nav-link" href="/admin">Home</a>
           <a class="auth-nav-link active" href="/admin/login">Login</a>
-          <a class="auth-nav-link auth-nav-cta" href="/admin/signup">Create account</a>
+          <a class="auth-nav-link auth-nav-cta" href="/admin/signup"
+            >Create account</a
+          >
         </nav>
       </div>
     </header>
@@ -33,8 +35,12 @@
           <ellipse cx="300" cy="188" rx="42" ry="58" />
           <ellipse cx="374" cy="248" rx="44" ry="58" />
         </svg>
-        <h1 class="brand-title">Pettynara <span class="brand-accent">Admin</span></h1>
-        <p class="brand-subtitle">Manage pets, pet items, and orders with ease.</p>
+        <h1 class="brand-title">
+          Pettynara <span class="brand-accent">Admin</span>
+        </h1>
+        <p class="brand-subtitle">
+          Manage pets, pet items, and orders with ease.
+        </p>
       </div>
 
       <form class="auth-card" action="/admin/login" METHOD="POST">
@@ -43,7 +49,16 @@
         <div class="field">
           <label>Seller name</label>
           <div class="input-wrap">
-            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg
+              class="field-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
               <circle cx="12" cy="8" r="4" />
               <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
             </svg>
@@ -61,7 +76,16 @@
         <div class="field">
           <label>Password</label>
           <div class="input-wrap">
-            <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <svg
+              class="field-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
               <rect x="4" y="11" width="16" height="10" rx="2" />
               <path d="M8 11V7a4 4 0 0 1 8 0v4" />
             </svg>
@@ -80,7 +104,15 @@
               onclick="togglePassword()"
               aria-label="Show password"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
                 <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
                 <circle cx="12" cy="12" r="3" />
               </svg>
@@ -88,12 +120,22 @@
           </div>
         </div>
 
-        <button class="btn-primary-auth" name="login" type="submit">Login</button>
+        <button class="btn-primary-auth" name="login" type="submit">
+          Login
+        </button>
 
         <div class="divider"><span>or</span></div>
 
         <a href="/admin/signup" class="btn-outline-auth">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
             <circle cx="12" cy="8" r="4" />
             <path d="M4 21c0-4 4-6 8-6s8 2 8 6" />
           </svg>
@@ -105,10 +147,6 @@
           <a href="/admin/signup">Create account</a>
         </p>
       </form>
-    </div>
-
-    <div class="auth-hero">
-      <img src="/img/pets-hero.png" alt="Pets" />
     </div>
   </div>
 

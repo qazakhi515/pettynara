@@ -89,10 +89,43 @@ class ProductServise {
   }
   /** ssr */
 
-  public async getAllProducts(): Promise<Product[]> {
-    const result = await this.productModel.find().exec();
-    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUNG);
-    return result;
+  public async getAllProducts(
+    page: number = 1,
+    limit: number = 8,
+  ): Promise<{
+    list: Product[];
+    total: number;
+    activeCount: number;
+    pausedCount: number;
+    imageCount: number;
+  }> {
+    const visible = { productStatus: { $ne: ProductStatus.DELETE } };
+    const [list, total, activeCount, pausedCount, imageAgg] = await Promise.all([
+      this.productModel
+        .find(visible)
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec(),
+      this.productModel.countDocuments(visible).exec(),
+      this.productModel
+        .countDocuments({ productStatus: ProductStatus.PROCESS })
+        .exec(),
+      this.productModel
+        .countDocuments({ productStatus: ProductStatus.PAUSE })
+        .exec(),
+      this.productModel
+        .aggregate([
+          { $match: visible },
+          { $project: { n: { $size: { $ifNull: ["$productImages", []] } } } },
+          { $group: { _id: null, total: { $sum: "$n" } } },
+        ])
+        .exec(),
+    ]);
+    if (!list) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUNG);
+
+    const imageCount = imageAgg[0]?.total ?? 0;
+    return { list, total, activeCount, pausedCount, imageCount };
   }
 
   public async createNewProduct(input: ProductInput): Promise<Product> {

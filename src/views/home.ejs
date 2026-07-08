@@ -265,27 +265,30 @@
     </main>
   </div>
 
-  <!-- Login-required toast -->
-  <div id="login-toast" class="login-toast" role="alert" aria-hidden="true">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" />
-      <line x1="12" y1="8" x2="12" y2="12" />
-      <line x1="12" y1="16" x2="12.01" y2="16" />
-    </svg>
-    <span>Please Login First</span>
-  </div>
-
   <script>
+    const LoginToast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 2600,
+      timerProgressBar: true,
+      iconColor: "#e11d48",
+      customClass: {
+        popup: "pettynara-toast",
+      },
+      didOpen: function (toast) {
+        toast.addEventListener("mouseenter", Swal.stopTimer);
+        toast.addEventListener("mouseleave", Swal.resumeTimer);
+      },
+    });
+
     function requireLogin(event) {
       event.preventDefault();
-      const toast = document.getElementById("login-toast");
-      toast.classList.add("show");
-      toast.setAttribute("aria-hidden", "false");
-      clearTimeout(window.__loginToastTimer);
-      window.__loginToastTimer = setTimeout(function () {
-        toast.classList.remove("show");
-        toast.setAttribute("aria-hidden", "true");
-      }, 2500);
+      LoginToast.fire({
+        icon: "error",
+        title: "Please login first",
+        text: "You need to be logged in to access this section.",
+      });
     }
   </script>
 </body>
