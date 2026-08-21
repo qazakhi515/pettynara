@@ -1,0 +1,23 @@
+services:
+  backend:
+    build: .
+    container_name: pettynara-backend
+    restart: unless-stopped
+
+    # Sirlar (MONGO_URL, SESSION_SECRET, SECRET_TOKEN) image ichida emas,
+    # tashqaridagi .env faylidan o'qiladi.
+    env_file: .env
+
+    # DIQQAT — "127.0.0.1:" prefiksi MAJBURIY.
+    # Oddiy "3003:3003" yozilsa, Docker o'z iptables qoidalarini UFW dan
+    # oldin qo'yadi va portni butun internetga ochib qo'yadi. Bunda esa
+    # port faqat serverning o'zidan ko'rinadi — tashqariga nginx chiqaradi.
+    # Tashqarida 4005 (server konventsiyasi), konteyner ichida esa 3003 —
+    # ya'ni backend kodiga va .env dagi PORT=3003 ga tegilmaydi.
+    ports:
+      - "127.0.0.1:4005:3003"
+
+    # Yuklangan rasmlar konteyner ichida emas, host diskida saqlanadi.
+    # Aks holda har "docker compose up --build" da 102MB rasm yo'qolardi.
+    volumes:
+      - ./uploads:/app/uploads

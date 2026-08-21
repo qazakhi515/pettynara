@@ -129,7 +129,10 @@ const extractToken = (req: ExtendedRequest): string | null => {
   const cookieToken = req.cookies?.["accessToken"];
   // Eski logout `null` qiymatini yozib ketgan bo'lishi mumkin — bunday "axlat"
   // cookie truthy string bo'lgani uchun Bearer fallbackni to'sib qo'yardi
-  if (cookieToken && !["null", "undefined", ""].includes(String(cookieToken).trim()))
+  if (
+    cookieToken &&
+    !["null", "undefined", ""].includes(String(cookieToken).trim())
+  )
     return String(cookieToken).trim();
 
   const authHeader = req.headers?.authorization;

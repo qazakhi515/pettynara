@@ -1,0 +1,14 @@
+# Image ichiga tushmasligi kerak bo'lgan narsalar.
+# Bu nafaqat hajmni kamaytiradi, balki xavfsizlik ham:
+# .env hech qachon image ichiga qotib qolmasligi kerak.
+node_modules
+dist
+uploads
+.env
+.git
+.gitignore
+.DS_Store
+docs
+skills
+.claude
+train.ts
