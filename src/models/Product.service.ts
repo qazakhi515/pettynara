@@ -71,18 +71,20 @@ class ProductServise {
       };
       const existView = await this.viewService.checkViewExistence(input);
       console.log("existView:", !!existView);
+      // Count a view only the first time this member opens the product.
       if (!existView) {
         //Insert view
         await this.viewService.insertMemberView(input);
+
+        //increase Counts (only on the first view per member)
+        await this.productModel
+          .findByIdAndUpdate(
+            productId,
+            { $inc: { productViews: +1 } },
+            { new: true },
+          )
+          .exec();
       }
-      //increase Counts
-      await this.productModel
-        .findByIdAndUpdate(
-          productId,
-          { $inc: { productViews: +1 } },
-          { new: true },
-        )
-        .exec();
     }
 
     return result;

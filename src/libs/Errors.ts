@@ -21,6 +21,7 @@ export enum Message {
   WRONG_PASSWORD = "Wrong password, please try again",
   NOT_AUTHENTICATED = "You are not authenticated, Please login first",
   TOKEN_CREATION_FAILED = "Token creation error!",
+  TOKEN_EXPIRED = "Your session has expired, please login again",
 }
 
 class Errors extends Error {

@@ -118,21 +118,28 @@ class OrderService {
     const memberId = shapeIntoMongooseObjectId(member._id),
       orderId = shapeIntoMongooseObjectId(input.orderId),
       orderStatus = input.orderStatus;
+    // findByIdAndUpdate object filterni qabul qilmaydi — mongoose undan faqat _id ni
+    // olib, memberId ni jimgina tashlab yuborardi (ya'ni egalik tekshiruvi ishlamasdi)
     const result = await this.orderModel
-      .findByIdAndUpdate(
+      .findOneAndUpdate(
         {
-          memberId: memberId,
           _id: orderId,
+          memberId: memberId,
         },
         { orderStatus: orderStatus },
         { new: true },
       )
       .exec();
 
-    if (!result) throw new Errors(HttpCode.NOT_MODIFIED, Message.UPDATE_FAILED);
+    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.UPDATE_FAILED);
 
     if (orderStatus === OrderStatus.PROCESS) {
-      await this.memberService.addUserPoint(member, 1);
+      // ball qo'shish — bonus amal. Yiqilsa ham to'lov bekor bo'lmasligi kerak
+      try {
+        await this.memberService.addUserPoint(member, 1);
+      } catch (err) {
+        console.log("Warn, addUserPoint failed (order still PROCESS):", err);
+      }
     }
     return result;
   }

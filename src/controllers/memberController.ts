@@ -73,7 +73,8 @@ memberController.login = async (req: Request, res: Response) => {
 memberController.logout = (req: ExtendedRequest, res: Response) => {
   try {
     console.log("logout");
-    res.cookie("accessToken", null, { maxAge: 0, httpOnly: true });
+    // `res.cookie(..., null)` cookie'ga literal "null" satrini yozib qo'yardi
+    res.clearCookie("accessToken", { httpOnly: false });
     res.status(HttpCode.OK).json({ logout: true });
   } catch (err) {
     console.log("Error, logout", err);
@@ -123,13 +124,28 @@ memberController.getTopUsers = async (req: Request, res: Response) => {
   }
 };
 
+/** Extract the access token from the cookie or the Authorization header */
+const extractToken = (req: ExtendedRequest): string | null => {
+  const cookieToken = req.cookies?.["accessToken"];
+  // Eski logout `null` qiymatini yozib ketgan bo'lishi mumkin — bunday "axlat"
+  // cookie truthy string bo'lgani uchun Bearer fallbackni to'sib qo'yardi
+  if (cookieToken && !["null", "undefined", ""].includes(String(cookieToken).trim()))
+    return String(cookieToken).trim();
+
+  const authHeader = req.headers?.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    return authHeader.slice(7).trim();
+  }
+  return null;
+};
+
 memberController.verifyAuth = async (
   req: ExtendedRequest,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const token = req.cookies["accessToken"];
+    const token = extractToken(req);
     if (token) req.member = await authService.checkAuth(token);
     if (!req.member)
       throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);
@@ -137,8 +153,12 @@ memberController.verifyAuth = async (
     next();
   } catch (err) {
     console.log("Error, verifyAuth:", err);
-    if (err instanceof Errors) res.status(err.code).json(err);
-    else res.status(Errors.standart.code).json(Errors.standart);
+    if (err instanceof Errors) {
+      // Yaroqsiz/muddati o'tgan tokenni tozalaymiz, aks holda brauzer uni qayta-qayta yuboraveradi
+      if (err.code === HttpCode.UNAUTHORIZED)
+        res.clearCookie("accessToken", { httpOnly: false });
+      res.status(err.code).json(err);
+    } else res.status(Errors.standart.code).json(Errors.standart);
   }
 };
 
@@ -148,7 +168,7 @@ memberController.retrieveAuth = async (
   next: NextFunction,
 ) => {
   try {
-    const token = req.cookies["accessToken"];
+    const token = extractToken(req);
     if (token) req.member = await authService.checkAuth(token);
     next();
   } catch (err) {

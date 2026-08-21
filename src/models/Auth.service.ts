@@ -31,12 +31,15 @@ class AuthService {
   }
 
   public async checkAuth(token: string): Promise<Member> {
-    const result: Member = (await jwt.verify(
-      token,
-      this.secretToken,
-    )) as Member;
-    console.log(`--- [AUTH] memberNick: ${result.memberNick} ---`);
-    return result;
+    try {
+      const result: Member = jwt.verify(token, this.secretToken) as Member;
+      console.log(`--- [AUTH] memberNick: ${result.memberNick} ---`);
+      return result;
+    } catch (err) {
+      if (err instanceof jwt.TokenExpiredError)
+        throw new Errors(HttpCode.UNAUTHORIZED, Message.TOKEN_EXPIRED);
+      throw new Errors(HttpCode.UNAUTHORIZED, Message.NOT_AUTHENTICATED);
+    }
   }
 }
 
