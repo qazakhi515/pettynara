@@ -19,6 +19,7 @@ export enum Message {
   NO_MEMBER_NICK = "No member with that member nick",
   USED_NICK_PHONE = "You are inserting already used nick or phone",
   WRONG_PASSWORD = "Wrong password, please try again",
+  INVALID_PHONE = "Phone number must contain 9 to 15 digits",
   NOT_AUTHENTICATED = "You are not authenticated, Please login first",
   TOKEN_CREATION_FAILED = "Token creation error!",
   TOKEN_EXPIRED = "Your session has expired, please login again",

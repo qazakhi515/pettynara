@@ -76,8 +76,11 @@ class ProductServise {
         //Insert view
         await this.viewService.insertMemberView(input);
 
-        //increase Counts (only on the first view per member)
-        await this.productModel
+        // Increase the count (only on the first view per member) and keep the
+        // updated document — `result` was read before the increment, so
+        // returning it unchanged showed the visitor a stale count until they
+        // reloaded the page.
+        result = await this.productModel
           .findByIdAndUpdate(
             productId,
             { $inc: { productViews: +1 } },

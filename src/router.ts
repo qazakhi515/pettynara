@@ -30,8 +30,25 @@ router.post(
 
 router.get("/member/top-users", memberController.getTopUsers);
 
+//** likes **//
+// verifyAuth, not retrieveAuth: liking is only meaningful for a signed-in
+// member, and the guard has to live here rather than in the UI — otherwise the
+// endpoint is still open to anyone calling the API directly.
+router.get("/member/likes", memberController.verifyAuth, memberController.getMyLikes);
+router.post(
+  "/member/likes/sync",
+  memberController.verifyAuth,
+  memberController.syncMyLikes,
+);
+
 //** product **//
 router.get("/product/all", productController.getProducts);
+// Declared before "/product/:id" so ":id" cannot swallow it.
+router.post(
+  "/product/:id/like",
+  memberController.verifyAuth,
+  productController.likeProduct,
+);
 router.get(
   "/product/:id",
   memberController.retrieveAuth,

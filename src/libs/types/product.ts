@@ -14,6 +14,7 @@ export interface Product {
   productDesc?: string;
   productImages: string[];
   productViews: number;
+  productLikes: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -33,6 +34,7 @@ export interface ProductInput {
   productDesc?: string;
   productImages?: string[];
   productViews?: number;
+  productLikes?: number;
 }
 
 export interface ProductUpdateInput {
@@ -44,4 +46,5 @@ export interface ProductUpdateInput {
   productDesc?: string;
   productImages?: string[];
   productViews?: number;
+  productLikes?: number;
 }

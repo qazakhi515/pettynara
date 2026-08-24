@@ -41,6 +41,12 @@ const productSchema = new Schema(
       type: Number,
       default: 0,
     },
+    // Denormalised count of Like rows, kept in step by LikeService.toggleLike
+    // so listings never have to aggregate the likes collection.
+    productLikes: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }, // updateAd, createAd
 );

@@ -2,11 +2,13 @@ import { Request, Response } from "express";
 import Errors, { HttpCode, Message } from "../libs/Errors";
 import { T } from "../libs/types/common";
 import ProductService from "../models/Product.service";
+import LikeService from "../models/Like.service";
 import { AdminRequest, ExtendedRequest } from "../libs/types/member";
 import { ProductInput, ProductInquiry } from "../libs/types/product";
 import { ProductCollection } from "../libs/enums/product.enum";
 
 const productService = new ProductService();
+const likeService = new LikeService();
 const productController: T = {};
 
 /** ssr */
@@ -44,6 +46,21 @@ productController.getProduct = async (req: ExtendedRequest, res: Response) => {
     res.status(HttpCode.OK).json(result);
   } catch (err) {
     console.log("Error, getProduct:", err);
+    if (err instanceof Errors) res.status(err.code).json(err);
+    else res.status(Errors.standart.code).json(Errors.standart);
+  }
+};
+
+/** Toggle the current member's like on a product. Mounted behind verifyAuth,
+ *  so req.member is always present here. */
+productController.likeProduct = async (req: ExtendedRequest, res: Response) => {
+  try {
+    console.log("likeProduct");
+    const { id } = req.params;
+    const result = await likeService.toggleLike(req.member._id, id as string);
+    res.status(HttpCode.OK).json(result);
+  } catch (err) {
+    console.log("Error, likeProduct:", err);
     if (err instanceof Errors) res.status(err.code).json(err);
     else res.status(Errors.standart.code).json(Errors.standart);
   }
