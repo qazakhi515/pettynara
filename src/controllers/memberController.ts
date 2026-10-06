@@ -18,6 +18,13 @@ const memberService = new MemberService();
 const authService = new AuthService();
 const likeService = new LikeService();
 
+const PROFILE_FIELDS = [
+  "memberNick",
+  "memberPhone",
+  "memberAddress",
+  "memberDesc",
+] as const;
+
 const memberController: T = {};
 memberController.getRestaurant = async (req: Request, res: Response) => {
   try {
@@ -108,7 +115,13 @@ memberController.getMemberDetail = async (
 memberController.updateMember = async (req: ExtendedRequest, res: Response) => {
   try {
     console.log("updateMember");
-    const input: MemberUpdateInput = req.body;
+    // Only profile fields can be edited here. Passing the whole body let a
+    // member set their own role, status or points, and store a new password
+    // unhashed.
+    const input = {} as MemberUpdateInput;
+    for (const key of PROFILE_FIELDS) {
+      if (typeof req.body?.[key] === "string") input[key] = req.body[key];
+    }
     if (input.memberPhone !== undefined && !isValidPhone(input.memberPhone))
       throw new Errors(HttpCode.BAD_REQUEST, Message.INVALID_PHONE);
     if (req.file) input.memberImage = req.file.path.replace(/\\/, "/");
