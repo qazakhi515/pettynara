@@ -17,6 +17,13 @@ const store = new MongoDBStore({
   collection: "sessions",
 });
 
+// The store is built without a callback, so a connection failure would reach
+// connect-mongodb-session's `throw` path and kill the process at boot. A
+// listener turns that into a logged error instead.
+store.on("error", function (error: Error) {
+  console.log("Error, session store:", error);
+});
+
 /* 1- ENTRANCE */
 const app = express();
 app.disable("etag");
@@ -31,22 +38,26 @@ app.use(morgan(MORGAN_FORMAT));
 /* 2- SESSION */
 // authentication
 // authorization
+// Only the EJS admin uses sessions — the React API authenticates with a JWT and
+// never reads req.session. Mounted globally (and with saveUninitialized: true)
+// this wrote a sessions document to MongoDB on every anonymous API request.
 app.use(
+  "/admin",
   session({
     secret: String(process.env.SESSION_SECRET),
     cookie: {
       maxAge: 1000 * 3600 * 3, // 3 hours
     },
     store: store,
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
   }),
+  function (req, res, next) {
+    const sessionInstance = req.session as T;
+    res.locals.member = sessionInstance?.member;
+    next();
+  },
 );
-app.use(function (req, res, next) {
-  const sessionInstance = req.session as T;
-  res.locals.member = sessionInstance.member;
-  next();
-});
 
 /* 3- VIEWS */
 app.set("views", path.join(__dirname, "views"));
