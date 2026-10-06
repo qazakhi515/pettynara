@@ -14,6 +14,10 @@ REST API and admin panel for **Pettynara**, an online pet shop where customers b
 > **한국어 요약**
 > Pettynara는 반려동물과 반려용품을 판매하는 온라인 펫샵의 백엔드입니다. Node.js · Express · TypeScript · MongoDB로 REST API와 EJS 관리자 페이지를 구현했고, 상품 이미지는 AWS S3에 저장합니다. Docker Compose와 Nginx로 VPS에 배포했으며 HTTPS(Let's Encrypt)를 적용했습니다.
 
+![Pettynara home page](docs/screenshots/home.jpg)
+
+More screenshots are in the [frontend repo](https://github.com/qazakhi515/pettynara-react#screenshots).
+
 ## Features
 
 - **Members:** sign up, log in and log out with a JWT stored in a cookie; profile update with avatar upload.
