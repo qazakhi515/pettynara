@@ -17,6 +17,17 @@ describe("signup", () => {
     expect(member.memberPassword ?? "").not.toMatch(/^\$2/);
   });
 
+  it("ignores role, status and points sent by the client", async () => {
+    const res = await api()
+      .post("/member/signup")
+      .send(memberInput({ memberType: "ADMIN", memberStatus: "BLOCK", memberPoints: 9999 }));
+
+    expect(res.status).toBe(201);
+    expect(res.body.member.memberType).toBe("USER");
+    expect(res.body.member.memberStatus).toBe("ACTIVE");
+    expect(res.body.member.memberPoints).toBe(0);
+  });
+
   it("rejects a phone number that is not 9-15 digits", async () => {
     const res = await api()
       .post("/member/signup")

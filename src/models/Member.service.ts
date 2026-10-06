@@ -30,10 +30,16 @@ class MemberService {
 
   public async signup(input: MemberInput): Promise<Member> {
     const salt = await bcrypt.genSalt();
-    input.memberPassword = await bcrypt.hash(input.memberPassword, salt);
+    const hashedPassword = await bcrypt.hash(input.memberPassword, salt);
 
     try {
-      const result = await this.memberModel.create(input);
+      // Only these fields come from the client. Passing the whole body let a
+      // caller sign up with memberType ADMIN, any status, or any points.
+      const result = await this.memberModel.create({
+        memberNick: input.memberNick,
+        memberPhone: input.memberPhone,
+        memberPassword: hashedPassword,
+      });
       result.memberPassword = "";
       return result.toJSON();
     } catch (err) {
