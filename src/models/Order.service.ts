@@ -10,15 +10,22 @@ import {
 } from "../libs/types/order";
 import OrderModel from "../schema/Order.model";
 import OrderItemModel from "../schema/OrderItem.model";
-import { ObjectId } from "mongoose";
+import ProductModel from "../schema/Product.model";
+import { ProductStatus } from "../libs/enums/product.enum";
+import { isValidObjectId, ObjectId } from "mongoose";
 import MemberService from "./Member.service";
+
+const MAX_ITEM_QUANTITY = 100;
+
 class OrderService {
   private readonly orderModel;
   private readonly orderItemModel;
+  private readonly productModel;
   private readonly memberService;
   constructor() {
     this.orderModel = OrderModel;
     this.orderItemModel = OrderItemModel;
+    this.productModel = ProductModel;
     this.memberService = new MemberService();
   }
 
@@ -27,7 +34,8 @@ class OrderService {
     input: OrderItemInput[],
   ): Promise<Order> {
     const memberId = shapeIntoMongooseObjectId(member._id);
-    const amount = input.reduce((accumulator: number, item: OrderItemInput) => {
+    const items = await this.priceOrderItems(input);
+    const amount = items.reduce((accumulator: number, item: OrderItemInput) => {
       // iterate
       return accumulator + item.itemPrice * item.itemQuantity;
     }, 0);
@@ -41,13 +49,54 @@ class OrderService {
 
       const orderId = newOrder._id;
       console.log("orderId:", newOrder._id);
-      await this.recordOrderItem(orderId, input);
+      await this.recordOrderItem(orderId, items);
 
       return newOrder;
     } catch (err) {
       console.log("Error, model:createOrder:", err);
       throw new Errors(HttpCode.BAD_REQUEST, Message.CREATE_FAILED);
     }
+  }
+
+  /**
+   * Validates the basket sent by the client and prices it from the database.
+   * The client only chooses products and quantities; trusting its itemPrice
+   * let anyone order a product for any amount.
+   */
+  private async priceOrderItems(input: unknown): Promise<OrderItemInput[]> {
+    const invalid = new Errors(HttpCode.BAD_REQUEST, Message.INVALID_ORDER_ITEMS);
+    if (!Array.isArray(input) || input.length === 0) throw invalid;
+
+    for (const item of input) {
+      const quantity = item?.itemQuantity;
+      if (
+        !Number.isInteger(quantity) ||
+        quantity < 1 ||
+        quantity > MAX_ITEM_QUANTITY ||
+        !isValidObjectId(item?.productId)
+      )
+        throw invalid;
+    }
+
+    const products = await this.productModel
+      .find({
+        _id: { $in: input.map((item) => String(item.productId)) },
+        productStatus: ProductStatus.PROCESS,
+      })
+      .exec();
+    const priceById = new Map<string, number>(
+      products.map((p) => [String(p._id), p.productPrice]),
+    );
+
+    return input.map((item) => {
+      const itemPrice = priceById.get(String(item.productId));
+      if (itemPrice === undefined) throw invalid;
+      return {
+        productId: shapeIntoMongooseObjectId(String(item.productId)),
+        itemQuantity: item.itemQuantity,
+        itemPrice,
+      };
+    });
   }
 
   private async recordOrderItem(
