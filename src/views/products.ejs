@@ -213,7 +213,11 @@
                   const coll = (value.productCollection || 'OTHER');
                   const collLabel = coll.charAt(0) + coll.slice(1).toLowerCase();
                   const imgs = value.productImages || value.productmages || [];
-                  const thumb = imgs.length ? ('/' + String(imgs[0]).replace(/^\.?\//, '')) : '/img/upload.svg';
+                  const firstImg = imgs.length ? String(imgs[0]) : '';
+                  // S3 uploads are stored as full URLs; older ones as "uploads/..." paths.
+                  const thumb = !firstImg ? '/img/upload.svg'
+                    : /^https?:\/\//.test(firstImg) ? firstImg
+                    : '/' + firstImg.replace(/^\.?\//, '');
                   const st = value.productStatus;
                 %>
                 <tr>
