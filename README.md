@@ -4,6 +4,7 @@ REST API and admin panel for **Pettynara**, an online pet shop where customers b
 
 **Live:** [pettynara.uz](https://pettynara.uz) · **API:** [api.pettynara.uz](https://api.pettynara.uz) · **Frontend repo:** [pettynara-react](https://github.com/qazakhi515/pettynara-react)
 
+[![CI](https://github.com/qazakhi515/pettynara/actions/workflows/ci.yml/badge.svg?branch=petty-mod)](https://github.com/qazakhi515/pettynara/actions/workflows/ci.yml)
 ![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=nodedotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-4-000000?logo=express&logoColor=white)
@@ -51,6 +52,7 @@ Both apps run as Docker containers on one VPS. Their ports are bound to `127.0.0
 | Data | MongoDB Atlas, Mongoose |
 | Auth | JWT in a cookie (API), `express-session` with a MongoDB store (admin) |
 | Storage | AWS S3 via `@aws-sdk/client-s3` |
+| Testing | Jest, Supertest, mongodb-memory-server, GitHub Actions |
 | Ops | Docker multi-stage build, Docker Compose, Nginx, Certbot |
 
 ## Project structure
@@ -67,6 +69,7 @@ src/
 ├── libs/                # config, errors, enums, types, upload and S3 utils
 ├── scripts/             # one-off maintenance scripts
 └── views/, public/      # admin panel templates and assets
+tests/                   # API tests (Jest + Supertest)
 ```
 
 ## API
@@ -88,6 +91,25 @@ src/
 | POST | `/order/create` | ✔ | Create an order from basket items |
 | GET | `/order/all` | ✔ | Member's orders by status |
 | POST | `/order/update` | ✔ | Change order status (owner only) |
+
+## Testing
+
+```bash
+npm test
+```
+
+82 tests call the API over HTTP with Supertest and run against an in-memory MongoDB (`mongodb-memory-server`), so they need no setup and never touch a real database. They cover authentication, products, orders, likes, profile updates, uploads and the admin guard. GitHub Actions runs the build and the tests on every push and pull request.
+
+Writing the tests surfaced several bugs, each fixed in its own commit with a test that reproduces it:
+
+| Bug | Impact | Fix |
+|---|---|---|
+| Order prices came from the client | A direct API call could buy a 200,000 KRW pet for 1 KRW | Prices are read from the database; quantities and products are validated |
+| Signup and profile update saved the whole request body | Anyone could register as `ADMIN`, set their own points, or store an unhashed password | Only allowed fields are accepted |
+| Order status could be set freely | Re-paying an order earned unlimited points; orders could skip payment | Only valid status changes are allowed, and payment succeeds once |
+| Search text went straight into `RegExp` | `(` returned a 500; crafted patterns could stall the regex engine | Search input is escaped |
+| A typo in the member status filter; top users sorted ascending | Blocked members kept access to their profile; the "top" list showed the lowest scores | Corrected the filter and the sort |
+| Missing `page`/`limit`, malformed ids and rejected uploads | 500 errors for client mistakes | Defaults and limits, 404 for bad ids, 400 for bad files |
 
 ## Engineering notes
 
@@ -123,6 +145,7 @@ npm run start:dev       # http://localhost:3003, admin at /admin
 | `npm run start:dev` | Run with nodemon and ts-node |
 | `npm run build` | Compile TypeScript to `dist/` |
 | `npm start` | Run with ts-node |
+| `npm test` | Run the test suite |
 
 ## Deployment
 
@@ -134,8 +157,8 @@ The image is a two-stage build: TypeScript is compiled in the first stage, and t
 
 ## Roadmap
 
-- [ ] Automated tests (Jest + Supertest) and CI with GitHub Actions
-- [ ] Request validation and a central error handler
+- [x] Automated tests (Jest + Supertest) and CI with GitHub Actions
+- [ ] Schema-based request validation and a central error handler
 - [ ] Node.js 22 base image
 - [ ] Serve images through CloudFront and close public bucket access
 - [ ] Kakao login and Toss Payments
