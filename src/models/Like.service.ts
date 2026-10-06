@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import { isValidObjectId, ObjectId } from "mongoose";
 import { shapeIntoMongooseObjectId } from "../libs/config";
 import { LikeGroup } from "../libs/enums/like.enum";
 import { ProductStatus } from "../libs/enums/product.enum";
@@ -35,6 +35,8 @@ class LikeService {
     memberId: ObjectId,
     productId: string,
   ): Promise<LikeToggleResult> {
+    if (!isValidObjectId(productId))
+      throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUNG);
     const likeRefId = shapeIntoMongooseObjectId(productId);
 
     const product = await this.productModel.findById(likeRefId).exec();

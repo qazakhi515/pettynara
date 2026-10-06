@@ -30,10 +30,16 @@ class MemberService {
 
   public async signup(input: MemberInput): Promise<Member> {
     const salt = await bcrypt.genSalt();
-    input.memberPassword = await bcrypt.hash(input.memberPassword, salt);
+    const hashedPassword = await bcrypt.hash(input.memberPassword, salt);
 
     try {
-      const result = await this.memberModel.create(input);
+      // Only these fields come from the client. Passing the whole body let a
+      // caller sign up with memberType ADMIN, any status, or any points.
+      const result = await this.memberModel.create({
+        memberNick: input.memberNick,
+        memberPhone: input.memberPhone,
+        memberPassword: hashedPassword,
+      });
       result.memberPassword = "";
       return result.toJSON();
     } catch (err) {
@@ -72,7 +78,7 @@ class MemberService {
   public async getMemberDetail(member: Member): Promise<Member> {
     const memberId = shapeIntoMongooseObjectId(member._id);
     const result = await this.memberModel
-      .findOne({ _id: memberId, MemberStatus: MemberStatus.ACTIVE })
+      .findOne({ _id: memberId, memberStatus: MemberStatus.ACTIVE })
       .exec();
     if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUNG);
     return result;
@@ -93,7 +99,7 @@ class MemberService {
   public async getTopUsers(): Promise<Member[]> {
     const result = await this.memberModel
       .find({ memberStatus: MemberStatus.ACTIVE, memberPoints: { $gte: 1 } })
-      .sort({ memberPoints: "asc" })
+      .sort({ memberPoints: "desc" })
       .limit(4)
       .exec();
     if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUNG);

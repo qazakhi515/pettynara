@@ -5,6 +5,9 @@ WORKDIR /app
 # package fayllarini alohida ko'chiramiz: kod o'zgarganda ham
 # npm ci qayta ishlamaydi, Docker keshdan oladi (build ancha tez)
 COPY package*.json ./
+# mongodb-memory-server (a test-only devDependency) would otherwise download a
+# ~120 MB MongoDB binary on every image build.
+ENV MONGOMS_DISABLE_POSTINSTALL=1
 RUN npm ci
 
 COPY tsconfig.json ./

@@ -3,6 +3,7 @@ import multer from "multer";
 import { v4 } from "uuid";
 import { RequestHandler } from "express";
 import { getS3Config, putImageToS3 } from "./s3";
+import Errors, { HttpCode, Message } from "../Errors";
 
 /**
  * Image uploads go to S3 when AWS_REGION and AWS_S3_BUCKET are set, and to the
@@ -47,6 +48,17 @@ const pushToS3 =
     }
   };
 
+/** A rejected file is the client's mistake: answer 400 instead of a 500. */
+const rejectBadUpload =
+  (handler: RequestHandler): RequestHandler =>
+  (req, res, next) =>
+    handler(req, res, (err?: unknown) => {
+      if (!err) return next();
+      console.log("Error, upload:", err);
+      const error = new Errors(HttpCode.BAD_REQUEST, Message.INVALID_IMAGE);
+      res.status(error.code).json(error);
+    });
+
 const getDiskStorage = (address: string) =>
   multer.diskStorage({
     destination: function (req, file, cb) {
@@ -68,11 +80,11 @@ const makeUploader = (address: string) => {
 
   return {
     single: (fieldName: string): RequestHandler[] => [
-      upload.single(fieldName),
+      rejectBadUpload(upload.single(fieldName)),
       ...afterUpload,
     ],
     array: (fieldName: string, maxCount?: number): RequestHandler[] => [
-      upload.array(fieldName, maxCount),
+      rejectBadUpload(upload.array(fieldName, maxCount)),
       ...afterUpload,
     ],
   };

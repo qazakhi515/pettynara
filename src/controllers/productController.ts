@@ -6,9 +6,17 @@ import LikeService from "../models/Like.service";
 import { AdminRequest, ExtendedRequest } from "../libs/types/member";
 import { ProductInput, ProductInquiry } from "../libs/types/product";
 import { ProductCollection } from "../libs/enums/product.enum";
+import { MAX_PAGE_SIZE, toPositiveInt } from "../libs/config";
 
 const productService = new ProductService();
 const likeService = new LikeService();
+const PRODUCT_SORT_FIELDS = [
+  "createdAt",
+  "productPrice",
+  "productViews",
+  "productLikes",
+];
+
 const productController: T = {};
 
 /** ssr */
@@ -17,9 +25,11 @@ productController.getProducts = async (req: Request, res: Response) => {
     console.log("getProducts");
     const { page, limit, order, productCollection, search } = req.query;
     const inquiry: ProductInquiry = {
-      order: String(order),
-      page: Number(page),
-      limit: Number(limit),
+      order: PRODUCT_SORT_FIELDS.includes(String(order))
+        ? String(order)
+        : "createdAt",
+      page: toPositiveInt(page, 1),
+      limit: toPositiveInt(limit, 8, MAX_PAGE_SIZE),
     };
     if (productCollection) {
       inquiry.productCollection = productCollection as ProductCollection;

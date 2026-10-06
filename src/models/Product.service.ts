@@ -1,4 +1,4 @@
-import { shapeIntoMongooseObjectId } from "../libs/config";
+import { escapeRegExp, shapeIntoMongooseObjectId } from "../libs/config";
 import { ProductStatus } from "../libs/enums/product.enum";
 import Errors, { HttpCode, Message } from "../libs/Errors";
 import { T } from "../libs/types/common";
@@ -10,7 +10,7 @@ import {
 } from "../libs/types/product";
 import ProductModel from "../schema/Product.model";
 
-import { ObjectId } from "mongoose";
+import { isValidObjectId, ObjectId } from "mongoose";
 import ViewService from "./View.service";
 import { ViewInput } from "../libs/types/view";
 import { ViewGroup } from "../libs/enums/view.enum";
@@ -29,7 +29,11 @@ class ProductServise {
     if (inquiry.productCollection)
       match.productCollection = inquiry.productCollection;
     if (inquiry.search) {
-      match.productName = { $regex: new RegExp(inquiry.search, "i") };
+      // Escaped: raw input made "(" a 500 and let a crafted pattern stall
+      // the regex engine.
+      match.productName = {
+        $regex: new RegExp(escapeRegExp(inquiry.search), "i"),
+      };
     }
     const sort: T =
       inquiry.order === "productPrice"
@@ -52,6 +56,8 @@ class ProductServise {
     memberId: ObjectId | null,
     id: string,
   ): Promise<Product> {
+    if (!isValidObjectId(id))
+      throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUNG);
     const productId = shapeIntoMongooseObjectId(id);
 
     let result = await this.productModel

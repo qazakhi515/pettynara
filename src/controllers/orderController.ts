@@ -5,6 +5,7 @@ import { ExtendedRequest } from "../libs/types/member";
 import OrderService from "../models/Order.service";
 import { OrderInquiry, OrderUpdateInput } from "../libs/types/order";
 import { OrderStatus } from "../libs/enums/order.enum";
+import { MAX_PAGE_SIZE, toPositiveInt } from "../libs/config";
 
 const orderService = new OrderService();
 
@@ -26,8 +27,8 @@ orderController.getMyOrders = async (req: ExtendedRequest, res: Response) => {
     console.log("getMyOrders");
     const { page, limit, orderStatus } = req.query; // destruction req.query ni yoyish bolyopti.
     const inquiry: OrderInquiry = {
-      page: Number(page),
-      limit: Number(limit),
+      page: toPositiveInt(page, 1),
+      limit: toPositiveInt(limit, 5, MAX_PAGE_SIZE),
       orderStatus: orderStatus as OrderStatus,
     };
     const result = await orderService.getMyOrders(req.member, inquiry);
