@@ -17,6 +17,14 @@ import MemberService from "./Member.service";
 
 const MAX_ITEM_QUANTITY = 100;
 
+/** The status changes a member may make. PAUSE -> PROCESS is the payment. */
+const ORDER_STATUS_FLOW: Record<OrderStatus, OrderStatus[]> = {
+  [OrderStatus.PAUSE]: [OrderStatus.PROCESS, OrderStatus.DELETE],
+  [OrderStatus.PROCESS]: [OrderStatus.FINISH],
+  [OrderStatus.FINISH]: [OrderStatus.DELETE],
+  [OrderStatus.DELETE]: [],
+};
+
 class OrderService {
   private readonly orderModel;
   private readonly orderItemModel;
@@ -164,23 +172,40 @@ class OrderService {
     member: Member,
     input: OrderUpdateInput,
   ): Promise<Order> {
+    if (!isValidObjectId(input.orderId))
+      throw new Errors(HttpCode.NOT_FOUND, Message.UPDATE_FAILED);
+
     const memberId = shapeIntoMongooseObjectId(member._id),
       orderId = shapeIntoMongooseObjectId(input.orderId),
       orderStatus = input.orderStatus;
+
+    const current = await this.orderModel
+      .findOne({ _id: orderId, memberId: memberId })
+      .exec();
+    if (!current) throw new Errors(HttpCode.NOT_FOUND, Message.UPDATE_FAILED);
+
+    // Without this check an order could go PROCESS -> PAUSE -> PROCESS again
+    // and earn a point every time, or jump straight to FINISH unpaid.
+    if (!ORDER_STATUS_FLOW[current.orderStatus as OrderStatus]?.includes(orderStatus))
+      throw new Errors(HttpCode.BAD_REQUEST, Message.INVALID_STATUS_CHANGE);
+
     // findByIdAndUpdate object filterni qabul qilmaydi — mongoose undan faqat _id ni
-    // olib, memberId ni jimgina tashlab yuborardi (ya'ni egalik tekshiruvi ishlamasdi)
+    // olib, memberId ni jimgina tashlab yuborardi (ya'ni egalik tekshiruvi ishlamasdi).
+    // orderStatus in the filter makes two parallel "pay" requests succeed once.
     const result = await this.orderModel
       .findOneAndUpdate(
         {
           _id: orderId,
           memberId: memberId,
+          orderStatus: current.orderStatus,
         },
         { orderStatus: orderStatus },
         { new: true },
       )
       .exec();
 
-    if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.UPDATE_FAILED);
+    if (!result)
+      throw new Errors(HttpCode.BAD_REQUEST, Message.INVALID_STATUS_CHANGE);
 
     if (orderStatus === OrderStatus.PROCESS) {
       // ball qo'shish — bonus amal. Yiqilsa ham to'lov bekor bo'lmasligi kerak

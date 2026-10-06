@@ -124,3 +124,57 @@ describe("order creation input", () => {
     expect(res.body).toHaveLength(0);
   });
 });
+
+describe("order status changes", () => {
+  const newOrder = async () => {
+    const owner = await signupMember();
+    const order = await createOrder(owner.auth, orderBody(await createProduct()));
+    return { ...owner, orderId: order.body._id as string };
+  };
+
+  it("follow PAUSE -> PROCESS -> FINISH -> DELETE", async () => {
+    const { auth, orderId } = await newOrder();
+    for (const status of [OrderStatus.PROCESS, OrderStatus.FINISH, OrderStatus.DELETE]) {
+      const res = await updateOrder(auth, orderId, status);
+      expect(res.status).toBe(201);
+      expect(res.body.orderStatus).toBe(status);
+    }
+  });
+
+  it("allow cancelling an unpaid order", async () => {
+    const { auth, orderId } = await newOrder();
+    const res = await updateOrder(auth, orderId, OrderStatus.DELETE);
+    expect(res.status).toBe(201);
+  });
+
+  it("cannot skip payment", async () => {
+    const { auth, orderId } = await newOrder();
+    const res = await updateOrder(auth, orderId, OrderStatus.FINISH);
+    expect(res.status).toBe(400);
+  });
+
+  it("cannot be paid again to collect more points", async () => {
+    const { auth, member, orderId } = await newOrder();
+    await updateOrder(auth, orderId, OrderStatus.PROCESS);
+
+    const back = await updateOrder(auth, orderId, OrderStatus.PAUSE);
+    const again = await updateOrder(auth, orderId, OrderStatus.PROCESS);
+
+    expect(back.status).toBe(400);
+    expect(again.status).toBe(400);
+    const stored = await MemberModel.findById(member._id);
+    expect(stored?.memberPoints).toBe(1);
+  });
+
+  it("rejects an unknown status", async () => {
+    const { auth, orderId } = await newOrder();
+    const res = await updateOrder(auth, orderId, "SHIPPED" as OrderStatus);
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 404 for a malformed order id", async () => {
+    const { auth } = await signupMember();
+    const res = await updateOrder(auth, "not-an-id", OrderStatus.PROCESS);
+    expect(res.status).toBe(404);
+  });
+});
