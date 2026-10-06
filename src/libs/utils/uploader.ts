@@ -1,37 +1,81 @@
 import path from "path";
 import multer from "multer";
-import {v4} from "uuid";
-function getTargetImageStorage(address: any) {////review
-    return multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, `./uploads/${address}`);
+import { v4 } from "uuid";
+import { RequestHandler } from "express";
+import { getS3Config, putImageToS3 } from "./s3";
+
+/**
+ * Image uploads go to S3 when AWS_REGION and AWS_S3_BUCKET are set, and to the
+ * local ./uploads folder otherwise (so local development works without AWS).
+ *
+ * Either way the uploaded file's `path` ends up holding what gets stored in
+ * MongoDB — an S3 URL or "uploads/<address>/<name>" — so controllers keep
+ * reading `req.file.path` / `req.files[i].path` unchanged.
+ */
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB per image
+
+const limits = { fileSize: MAX_FILE_SIZE };
+
+const fileFilter: multer.Options["fileFilter"] = (req, file, cb) => {
+  if (file.mimetype.startsWith("image/")) cb(null, true);
+  else cb(new Error("Only image files can be uploaded"));
+};
+
+const makeFileName = (originalName: string) =>
+  v4() + path.extname(originalName).toLowerCase();
+
+const uploadToS3 = async (file: Express.Multer.File, address: string) => {
+  const key = `${address}/${makeFileName(file.originalname)}`;
+  file.path = await putImageToS3(key, file.buffer, file.mimetype);
+};
+
+const pushToS3 =
+  (address: string): RequestHandler =>
+  async (req, res, next) => {
+    try {
+      const files = req.file
+        ? [req.file]
+        : Array.isArray(req.files)
+          ? req.files
+          : [];
+      await Promise.all(files.map((file) => uploadToS3(file, address)));
+      next();
+    } catch (err) {
+      console.log("Error, uploadToS3:", err);
+      next(err);
+    }
+  };
+
+const getDiskStorage = (address: string) =>
+  multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, `./uploads/${address}`);
     },
-    filename: function(req, file, cb) {
-        const extension = path.parse(file.originalname).ext;
-        const random_name = v4() + extension;
-        cb( null, random_name);
+    filename: function (req, file, cb) {
+      cb(null, makeFileName(file.originalname));
     },
-});
-}
-const makeUploader = (address:string) => {
-    const storage = getTargetImageStorage(address);
-    return multer({storage: storage});
-}
+  });
+
+const makeUploader = (address: string) => {
+  const useS3 = Boolean(getS3Config());
+  const upload = multer({
+    storage: useS3 ? multer.memoryStorage() : getDiskStorage(address),
+    limits,
+    fileFilter,
+  });
+  const afterUpload: RequestHandler[] = useS3 ? [pushToS3(address)] : [];
+
+  return {
+    single: (fieldName: string): RequestHandler[] => [
+      upload.single(fieldName),
+      ...afterUpload,
+    ],
+    array: (fieldName: string, maxCount?: number): RequestHandler[] => [
+      upload.array(fieldName, maxCount),
+      ...afterUpload,
+    ],
+  };
+};
 
 export default makeUploader;
-
-/*
-const product_storage = multer.diskStorage({
-    destination: function(req, file, cb) {
-        cb(null, "./uploads/products");
-    },
-    filename: function(req, file, cb) {
-        console.log(file);
-        const extension = path.parse(file.originalname).ext;
-        const random_name = v4() + extension;
-        cb( null, random_name);
-    },
-});
-
-export const uploadProductImage = multer({storage: product_storage});
-*/

@@ -56,3 +56,30 @@ Scope of this session: **analysis + a safe brand-rename layer** for the Burak �
 - **Admin EJS flows** (login/signup/products) not exercised post-rename.
 - **Domain migration** (RESTAURANT→STORE, category enums, `productmages` typo) **not started** — only analyzed/decided.
 - No end-to-end frontend↔backend integration check.
+
+---
+
+## S3 image uploads (2026-10-06, branch `feat/s3-uploads`)
+
+Product and member images move from the local `./uploads` folder to the S3 bucket `pettynara-uploads-2026` (ap-northeast-2), so the backend no longer keeps state on disk.
+
+| File | Change |
+|---|---|
+| [src/libs/utils/s3.ts](../src/libs/utils/s3.ts) | New: shared S3 client, `putImageToS3()` returns the public URL |
+| [src/libs/utils/uploader.ts](../src/libs/utils/uploader.ts) | S3 when `AWS_REGION` + `AWS_S3_BUCKET` are set, local disk otherwise; images only, 5 MB per file; `file.path` holds the stored value, so controllers are unchanged |
+| [src/views/products.ejs](../src/views/products.ejs) | Admin thumbnails accept full S3 URLs as well as old `uploads/...` paths |
+| [src/scripts/migrateUploadsToS3.ts](../src/scripts/migrateUploadsToS3.ts) | New one-off migration: dry run by default, `--apply` uploads files and rewrites DB paths; re-runnable |
+| `package.json` | Added `@aws-sdk/client-s3` |
+
+New env vars: `AWS_REGION`, `AWS_S3_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`.
+
+Frontend counterpart: `Pettynara-react` branch `feat/s3-image-urls` adds `getImageUrl()` in `src/lib/config.ts` and routes all 22 stored-image `<img>` URLs through it. **Deploy the frontend together with (or before) this backend change.**
+
+| Check | Status |
+|---|---|
+| `npm run build` (backend) | ✅ PASS |
+| Uploader smoke test: disk mode, non-image rejection, real S3 upload + public GET 200 | ✅ PASS |
+| Admin `products.ejs` render with S3 / legacy / no image | ✅ PASS |
+| Migration dry run against the production DB | ✅ 24 files, 21 products, 2 members; 3 member avatars exist only on the server |
+| Frontend `npm run build` | ✅ PASS |
+| Migration `--apply` on the server | ❌ NOT RUN — must run on the server, where all upload files exist |
