@@ -1,3 +1,4 @@
+import MemberModel from "../src/schema/Member.model";
 import { api, signupMember } from "./helpers";
 
 describe("POST /member/update", () => {
@@ -51,5 +52,29 @@ describe("POST /member/update", () => {
       .set(auth)
       .send({ memberPhone: "12-ab" });
     expect(res.status).toBe(400);
+  });
+});
+
+describe("GET /member/detail", () => {
+  it("returns 404 for a member who has been blocked", async () => {
+    const { auth, member } = await signupMember();
+    await MemberModel.updateOne({ _id: member._id }, { memberStatus: "BLOCK" });
+
+    const res = await api().get("/member/detail").set(auth);
+    expect(res.status).toBe(404);
+  });
+});
+
+describe("GET /member/top-users", () => {
+  it("lists members with the most points first", async () => {
+    const points = [3, 10, 1, 7, 5];
+    for (const memberPoints of points) {
+      const { member } = await signupMember();
+      await MemberModel.updateOne({ _id: member._id }, { memberPoints });
+    }
+
+    const res = await api().get("/member/top-users");
+    expect(res.status).toBe(200);
+    expect(res.body.map((m: any) => m.memberPoints)).toEqual([10, 7, 5, 3]);
   });
 });
