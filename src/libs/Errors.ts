@@ -22,6 +22,7 @@ export enum Message {
   INVALID_PHONE = "Phone number must contain 9 to 15 digits",
   INVALID_ORDER_ITEMS = "Order items are invalid or no longer on sale",
   INVALID_STATUS_CHANGE = "This order cannot be moved to that status",
+  INVALID_IMAGE = "Only image files up to 5 MB can be uploaded",
   NOT_AUTHENTICATED = "You are not authenticated, Please login first",
   TOKEN_CREATION_FAILED = "Token creation error!",
   TOKEN_EXPIRED = "Your session has expired, please login again",
