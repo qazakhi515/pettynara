@@ -85,3 +85,50 @@ describe("GET /product/:id", () => {
     expect(stored?.productViews).toBe(0);
   });
 });
+
+describe("query validation", () => {
+  it.each(["(", "[a-", "*"])("treats %p in search as plain text", async (search) => {
+    await createProduct({ productName: "Poodle" });
+    const res = await list({ search });
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+
+  it("matches regex characters literally", async () => {
+    await createProduct({ productName: "a.c" });
+    await createProduct({ productName: "abc" });
+    const res = await list({ search: "a.c" });
+    expect(res.body.map((p: any) => p.productName)).toEqual(["a.c"]);
+  });
+
+  it("answers a catastrophic-backtracking pattern quickly", async () => {
+    await createProduct({ productName: "a".repeat(40) + "!" });
+    const started = Date.now();
+    const res = await list({ search: "(a+)+$" });
+    expect(res.status).toBe(200);
+    expect(Date.now() - started).toBeLessThan(1000);
+  });
+
+  it("uses default paging when page and limit are missing", async () => {
+    await createProduct();
+    const res = await api().get("/product/all");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+  });
+
+  it("caps the page size", async () => {
+    const res = await list({ limit: 100000 });
+    expect(res.status).toBe(200);
+  });
+
+  it("returns 404 for a malformed product id", async () => {
+    const res = await api().get("/product/not-an-id");
+    expect(res.status).toBe(404);
+  });
+
+  it("returns 404 when liking a malformed product id", async () => {
+    const { auth } = await signupMember();
+    const res = await api().post("/product/not-an-id/like").set(auth);
+    expect(res.status).toBe(404);
+  });
+});

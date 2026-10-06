@@ -178,3 +178,12 @@ describe("order status changes", () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe("GET /order/all paging", () => {
+  it("uses default paging when page and limit are missing", async () => {
+    const { auth } = await signupMember();
+    await createOrder(auth, orderBody(await createProduct()));
+    const res = await api().get("/order/all").set(auth).query({ orderStatus: OrderStatus.PAUSE });
+    expect(res.body).toHaveLength(1);
+  });
+});
