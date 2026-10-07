@@ -83,3 +83,24 @@ Frontend counterpart: `Pettynara-react` branch `feat/s3-image-urls` adds `getIma
 | Migration dry run against the production DB | ✅ 24 files, 21 products, 2 members; 3 member avatars exist only on the server |
 | Frontend `npm run build` | ✅ PASS |
 | Migration `--apply` on the server | ❌ NOT RUN — must run on the server, where all upload files exist |
+
+---
+
+## Redis: rate limiting, caching, admin sessions (2026-10-08, branch `feat/redis`)
+
+Optional Redis (`REDIS_URL`); without it rate limits and sessions stay in memory and nothing is cached.
+
+- `src/libs/redis.ts`: lazy `ioredis` client, fail-fast commands, `waitForRedis()` used by `server.ts` before listening.
+- `src/libs/utils/rateLimit.ts`: `rate-limiter-flexible`; login 5 wrong passwords per IP+nick and 20 attempts per IP per 15 min, signup 5 per IP per hour, admin login IP limit; `429` + `Retry-After`; in-memory insurance limiter if Redis fails.
+- `src/libs/utils/cache.ts`: cache-aside, 60 s TTL for `/product/all` and `/member/top-users`; product lists invalidated by bumping `cache:products:version` on admin create/update.
+- `src/app.ts`: `trust proxy` = 1 (Nginx) so `req.ip` is the client IP; admin sessions moved from `connect-mongodb-session` to `connect-redis` (package removed). Existing admin sessions end on deploy.
+- `docker-compose.yml`: `redis:7-alpine`, no published port, 64 MB, `volatile-lru`, `redis-data` volume.
+- Tests: `tests/rateLimit.test.ts`, `tests/redis.test.ts`; `tests/setup.ts` flushes Redis and resets limiters; Jest `forceExit` removed. CI runs tests without and with a Redis service.
+
+| Check | Status |
+|---|---|
+| `npm run build` | ✅ |
+| Tests without Redis | ✅ 92 passed, 6 skipped |
+| Tests with local Redis (Docker) | ✅ 97 passed, 1 skipped |
+| App with unreachable Redis | ✅ lists 200, signup 201, 6th wrong login 429 (memory fallback) |
+| Server deploy (`REDIS_URL=redis://redis:6379` in `.env`) | ❌ NOT DONE |

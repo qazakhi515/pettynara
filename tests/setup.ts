@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import { closeRedis, getRedis, waitForRedis } from "../src/libs/redis";
+import { resetRateLimiters } from "../src/libs/utils/rateLimit";
 
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_URL as string);
@@ -7,17 +9,19 @@ beforeAll(async () => {
   await Promise.all(
     Object.values(mongoose.models).map((model) => model.syncIndexes()),
   );
+  // With REDIS_URL set (CI, or a local Redis) the same tests run on Redis.
+  await waitForRedis();
 });
 
 afterEach(async () => {
   const collections = await mongoose.connection.db.collections();
-  await Promise.all(
-    collections
-      .filter((c) => c.collectionName !== "sessions")
-      .map((c) => c.deleteMany({})),
-  );
+  await Promise.all(collections.map((c) => c.deleteMany({})));
+  // Each test starts with empty caches and rate-limit counters.
+  await getRedis()?.flushdb();
+  resetRateLimiters();
 });
 
 afterAll(async () => {
   await mongoose.disconnect();
+  await closeRedis();
 });

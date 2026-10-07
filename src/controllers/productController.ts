@@ -7,6 +7,10 @@ import { AdminRequest, ExtendedRequest } from "../libs/types/member";
 import { ProductInput, ProductInquiry } from "../libs/types/product";
 import { ProductCollection } from "../libs/enums/product.enum";
 import { MAX_PAGE_SIZE, toPositiveInt } from "../libs/config";
+import {
+  cachedProductList,
+  invalidateProductLists,
+} from "../libs/utils/cache";
 
 const productService = new ProductService();
 const likeService = new LikeService();
@@ -35,7 +39,9 @@ productController.getProducts = async (req: Request, res: Response) => {
       inquiry.productCollection = productCollection as ProductCollection;
     }
     if (search) inquiry.search = String(search);
-    const result = await productService.getProducts(inquiry);
+    const result = await cachedProductList(inquiry, () =>
+      productService.getProducts(inquiry),
+    );
 
     res.set("Cache-Control", "no-store");
     res.status(HttpCode.OK).json(result);
@@ -118,6 +124,7 @@ productController.createNewProduct = async (
     });
 
     await productService.createNewProduct(data);
+    await invalidateProductLists();
 
     res.send(
       `<script> alert ("successfully created"); window.location.replace('/admin/product/all') </script>`,
@@ -138,6 +145,7 @@ productController.updateChosenProduct = async (req: Request, res: Response) => {
     const id = req.params.id; //@ts-ignoreç
 
     const result = await productService.updateChosenProduct(id, req.body);
+    await invalidateProductLists();
 
     res.status(HttpCode.OK).json({ data: result });
   } catch (err) {

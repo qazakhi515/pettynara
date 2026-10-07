@@ -12,6 +12,16 @@ import Errors, { HttpCode, Message } from "../libs/Errors";
 import { AUTH_TIMER, isValidPhone } from "../libs/config";
 import AuthService from "../models/Auth.service";
 import LikeService from "../models/Like.service";
+import {
+  clearLoginFailures,
+  recordLoginFailure,
+  rejectIfLoginLocked,
+} from "../libs/utils/rateLimit";
+import {
+  cached,
+  CACHE_TTL_SECONDS,
+  TOP_USERS_CACHE_KEY,
+} from "../libs/utils/cache";
 
 //React loyiha uchun
 const memberService = new MemberService();
@@ -64,12 +74,24 @@ memberController.signup = async (req: Request, res: Response) => {
 };
 
 memberController.login = async (req: Request, res: Response) => {
+  const input: LoginInput = req.body;
   try {
     console.log("login");
-    const input: LoginInput = req.body,
-      result = await memberService.login(input),
-      token = await authService.createToken(result);
-    console.log("token>>", token);
+    if (await rejectIfLoginLocked(req, res, input.memberNick)) return;
+
+    let result: Member;
+    try {
+      result = await memberService.login(input);
+    } catch (err) {
+      const wrongCredentials =
+        err instanceof Errors &&
+        (err.code === HttpCode.UNAUTHORIZED || err.code === HttpCode.NOT_FOUND);
+      if (wrongCredentials) await recordLoginFailure(req, input.memberNick);
+      throw err;
+    }
+    await clearLoginFailures(req, input.memberNick);
+
+    const token = await authService.createToken(result);
 
     res.cookie("accessToken", token, {
       maxAge: +AUTH_TIMER * 3600 * 1000,
@@ -173,7 +195,9 @@ memberController.syncMyLikes = async (req: ExtendedRequest, res: Response) => {
 memberController.getTopUsers = async (req: Request, res: Response) => {
   try {
     console.log("getTopUsers");
-    const result = await memberService.getTopUsers();
+    const result = await cached(TOP_USERS_CACHE_KEY, CACHE_TTL_SECONDS, () =>
+      memberService.getTopUsers(),
+    );
     res.status(HttpCode.OK).json(result);
   } catch (err) {
     console.log("Error, getTopUsers", err);

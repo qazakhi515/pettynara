@@ -4,12 +4,13 @@ import memberController from "./controllers/memberController";
 import uploader from "./libs/utils/uploader";
 import productController from "./controllers/productController";
 import orderController from "./controllers/orderController";
+import { limitLoginAttempts, limitSignups } from "./libs/utils/rateLimit";
 
 //** member **//
 router.get("/member/restaurant", memberController.getRestaurant);
 
-router.post("/member/login", memberController.login);
-router.post("/member/signup", memberController.signup);
+router.post("/member/login", limitLoginAttempts, memberController.login);
+router.post("/member/signup", limitSignups, memberController.signup);
 router.post(
   "/member/logout",
   memberController.verifyAuth,

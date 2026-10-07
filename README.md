@@ -28,6 +28,8 @@ More screenshots are in the [frontend repo](https://github.com/qazakhi515/pettyn
 - **Top users:** members ranked by points.
 - **Admin panel (EJS):** session-based login; create products with up to 5 images, change product status, manage users.
 - **Image storage:** uploads go to AWS S3 (local disk in development), images only, 5 MB per file.
+- **Rate limiting:** login and signup are limited per IP and per nick to stop password guessing.
+- **Caching:** product lists and the top-users ranking are cached in Redis for 60 seconds.
 
 ## Architecture
 
@@ -37,11 +39,12 @@ flowchart LR
     N -->|pettynara.uz| W[React app<br/>container]
     N -->|api.pettynara.uz| A[Express API + EJS admin<br/>container]
     A --> M[(MongoDB Atlas)]
+    A --> R[(Redis<br/>container)]
     A -->|upload| S[(AWS S3<br/>ap-northeast-2)]
     U -->|load images| S
 ```
 
-Both apps run as Docker containers on one VPS. Their ports are bound to `127.0.0.1`, so the only way in from the internet is through Nginx, which terminates HTTPS and puts an extra HTTP Basic Auth layer in front of `/admin`.
+The apps and Redis run as Docker containers on one VPS. Redis has no published port at all, and the app ports are bound to `127.0.0.1`, so the only way in from the internet is through Nginx, which terminates HTTPS and puts an extra HTTP Basic Auth layer in front of `/admin`.
 
 ## Tech stack
 
@@ -50,7 +53,8 @@ Both apps run as Docker containers on one VPS. Their ports are bound to `127.0.0
 | Runtime | Node.js 20, TypeScript 5 |
 | Web | Express 4, EJS (admin panel), Multer |
 | Data | MongoDB Atlas, Mongoose |
-| Auth | JWT in a cookie (API), `express-session` with a MongoDB store (admin) |
+| Auth | JWT in a cookie (API), `express-session` with a Redis store (admin) |
+| Cache and limits | Redis 7, `ioredis`, `rate-limiter-flexible`, `connect-redis` |
 | Storage | AWS S3 via `@aws-sdk/client-s3` |
 | Testing | Jest, Supertest, mongodb-memory-server, GitHub Actions |
 | Ops | Docker multi-stage build, Docker Compose, Nginx, Certbot |
@@ -66,7 +70,7 @@ src/
 ├── controllers/         # request handling
 ├── models/              # services: business logic and database access
 ├── schema/              # Mongoose schemas
-├── libs/                # config, errors, enums, types, upload and S3 utils
+├── libs/                # config, errors, enums, types, Redis, upload, S3, cache and rate-limit utils
 ├── scripts/             # one-off maintenance scripts
 └── views/, public/      # admin panel templates and assets
 tests/                   # API tests (Jest + Supertest)
@@ -76,8 +80,8 @@ tests/                   # API tests (Jest + Supertest)
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| POST | `/member/signup` | | Create an account |
-| POST | `/member/login` | | Log in, sets the `accessToken` cookie |
+| POST | `/member/signup` | | Create an account (5 per IP per hour) |
+| POST | `/member/login` | | Log in, sets the `accessToken` cookie (see rate limits) |
 | POST | `/member/logout` | ✔ | Log out |
 | GET | `/member/detail` | ✔ | Current member |
 | POST | `/member/update` | ✔ | Update profile and avatar (`multipart/form-data`) |
@@ -98,7 +102,7 @@ tests/                   # API tests (Jest + Supertest)
 npm test
 ```
 
-82 tests call the API over HTTP with Supertest and run against an in-memory MongoDB (`mongodb-memory-server`), so they need no setup and never touch a real database. They cover authentication, products, orders, likes, profile updates, uploads and the admin guard. GitHub Actions runs the build and the tests on every push and pull request.
+98 tests call the API over HTTP with Supertest and run against an in-memory MongoDB (`mongodb-memory-server`), so they need no setup and never touch a real database. They cover authentication, products, orders, likes, profile updates, uploads, the admin guard, rate limits, caching and admin sessions. GitHub Actions runs the build and then the tests twice: without Redis, and with a Redis service container where the Redis-only tests also run.
 
 Writing the tests surfaced several bugs, each fixed in its own commit with a test that reproduces it:
 
@@ -111,13 +115,28 @@ Writing the tests surfaced several bugs, each fixed in its own commit with a tes
 | A typo in the member status filter; top users sorted ascending | Blocked members kept access to their profile; the "top" list showed the lowest scores | Corrected the filter and the sort |
 | Missing `page`/`limit`, malformed ids and rejected uploads | 500 errors for client mistakes | Defaults and limits, 404 for bad ids, 400 for bad files |
 
+## Redis
+
+Redis is optional: with `REDIS_URL` unset the app still runs, keeping rate limits and admin sessions in memory and caching nothing. That keeps local development and the default test run free of extra services.
+
+| Use | Keys | Details |
+|---|---|---|
+| Rate limiting | `rl:*` | Login: 5 wrong passwords per IP and nick in 15 minutes (cleared by a successful login) and 20 attempts per IP in 15 minutes. Signup: 5 per IP per hour. Over the limit the API answers `429` with `Retry-After`. |
+| Cache | `cache:*` | `GET /product/all` (per query) and `GET /member/top-users`, 60-second TTL. Product detail is not cached because every view updates its count. |
+| Admin sessions | `sess:*` | `connect-redis`, expiring with the 3-hour cookie. |
+
+- **Cache invalidation with a version key.** Product lists are cached per filter, search, sort and page, so one edit would touch many keys. Each key includes `cache:products:version`; an admin edit increments it, the old keys are never read again and expire on their own. No key scanning is needed.
+- **Failure modes.** Commands fail fast instead of queueing, so if Redis goes down the cache is skipped and pages load from MongoDB. Rate limiters fall back to an in-memory copy rather than letting every request through. Admin login needs Redis.
+- **Real client IPs.** Behind Nginx every request comes from `127.0.0.1`, which would put all users in one rate-limit bucket. `trust proxy` is set to one hop, so `req.ip` is the address Nginx appends to `X-Forwarded-For`, and a client cannot spoof it by sending its own header.
+- **Deployment.** Redis runs as `redis:7-alpine` in Docker Compose with no published port, a 64 MB limit and `volatile-lru` eviction; every key except the cache version has a TTL.
+
 ## Engineering notes
 
 - **Moving uploads to S3.** Images used to live on the server's disk, which made every server move a manual copy and blocked running more than one instance. Uploads now go to S3 through a Multer middleware that keeps the controller contract (`file.path`) unchanged. Existing images were moved with a re-runnable script ([`src/scripts/migrateUploadsToS3.ts`](src/scripts/migrateUploadsToS3.ts)): dry run first, then `--apply`, then a check that all 28 URLs return 200. The IAM user can only put, get and delete objects in this one bucket.
 - **Order ownership.** `findByIdAndUpdate` ignores everything in the filter except `_id`, so the "only the owner can update" check was silently skipped. It now uses `findOneAndUpdate({ _id, memberId })`.
 - **Likes on the server.** Likes used to exist only in the browser. They are now stored per member, with a sync endpoint that merges likes made while logged out.
 - **Points don't block orders.** Awarding points is wrapped separately, so a failure there can't roll back a paid order.
-- **Sessions only where needed.** The session middleware is mounted on `/admin` only; mounted globally, it wrote a session document to MongoDB on every anonymous API request.
+- **Sessions only where needed.** The session middleware is mounted on `/admin` only; mounted globally, it wrote a session document to the database on every anonymous API request. Sessions moved from MongoDB to Redis.
 
 ## Getting started
 
@@ -131,6 +150,12 @@ cp .env.example .env    # then fill in the values
 npm run start:dev       # http://localhost:3003, admin at /admin
 ```
 
+To run with Redis locally, start it with Docker and set `REDIS_URL=redis://localhost:6379` in `.env`:
+
+```bash
+docker run -d --name redis -p 6379:6379 redis:7-alpine
+```
+
 | Variable | Required | Description |
 |---|---|---|
 | `PORT` | | Default `3003` |
@@ -139,13 +164,14 @@ npm run start:dev       # http://localhost:3003, admin at /admin
 | `SECRET_TOKEN` | ✔ | JWT signing secret |
 | `AWS_REGION`, `AWS_S3_BUCKET` | | Enable S3 uploads; without them files go to `./uploads` |
 | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | | Credentials for S3 (not needed with an instance role) |
+| `REDIS_URL` | | Enables Redis, for example `redis://localhost:6379`; see [Redis](#redis) |
 
 | Script | Description |
 |---|---|
 | `npm run start:dev` | Run with nodemon and ts-node |
 | `npm run build` | Compile TypeScript to `dist/` |
 | `npm start` | Run with ts-node |
-| `npm test` | Run the test suite |
+| `npm test` | Run the test suite; with `REDIS_URL` set, the Redis tests run too |
 
 ## Deployment
 
