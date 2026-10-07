@@ -6,6 +6,7 @@ export enum HttpCode {
   UNAUTHORIZED = 401,
   FORBIDDEN = 403,
   NOT_FOUND = 404,
+  TOO_MANY_REQUESTS = 429,
   INTERNAL_SERVER_ERROR = 500,
 }
 
@@ -23,6 +24,7 @@ export enum Message {
   INVALID_ORDER_ITEMS = "Order items are invalid or no longer on sale",
   INVALID_STATUS_CHANGE = "This order cannot be moved to that status",
   INVALID_IMAGE = "Only image files up to 5 MB can be uploaded",
+  TOO_MANY_REQUESTS = "Too many attempts, please try again later",
   NOT_AUTHENTICATED = "You are not authenticated, Please login first",
   TOKEN_CREATION_FAILED = "Token creation error!",
   TOKEN_EXPIRED = "Your session has expired, please login again",

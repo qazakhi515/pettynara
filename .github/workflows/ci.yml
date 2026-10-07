@@ -11,6 +11,16 @@ jobs:
     env:
       # Keep the in-memory MongoDB binary outside node_modules so it can be cached.
       MONGOMS_DOWNLOAD_DIR: /home/runner/.cache/mongodb-binaries
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
 
@@ -26,4 +36,11 @@ jobs:
 
       - run: npm ci
       - run: npm run build
-      - run: npm test
+
+      # The app runs with or without Redis, so both modes are tested.
+      - name: Test without Redis
+        run: npm test
+      - name: Test with Redis
+        run: npm test
+        env:
+          REDIS_URL: redis://localhost:6379

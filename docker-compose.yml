@@ -21,3 +21,26 @@ services:
     # Aks holda har "docker compose up --build" da 102MB rasm yo'qolardi.
     volumes:
       - ./uploads:/app/uploads
+
+    # .env da REDIS_URL=redis://redis:6379 bo'lishi kerak: "redis" — pastdagi
+    # xizmat nomi, Docker tarmog'i uni o'zi manzilga aylantiradi.
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: pettynara-redis
+    restart: unless-stopped
+    # 64 MB yetarli: rate limit hisoblagichlari, 60 soniyalik kesh va admin
+    # session'lari. Hammasining TTL'i bor, xotira to'lsa avval eng eski
+    # TTL'li kalitlar o'chiriladi (volatile-lru).
+    command: redis-server --maxmemory 64mb --maxmemory-policy volatile-lru
+    # "ports:" ataylab YO'Q. Redis parolsiz ishlaydi, shuning uchun u na
+    # internetga, na serverning o'ziga ochiladi — faqat backend konteyneri
+    # Docker tarmog'i ichida ulana oladi.
+    volumes:
+      - redis-data:/data
+
+volumes:
+  # Redis restart bo'lganda ham admin session'lari va hisoblagichlar saqlanadi.
+  redis-data:

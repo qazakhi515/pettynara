@@ -11,7 +11,4 @@ module.exports = {
   // All test files share one database and clear it between tests.
   maxWorkers: 1,
   testTimeout: 20000,
-  // The admin session store in app.ts opens its own MongoDB client that is
-  // never closed, which would keep Jest waiting after the last test.
-  forceExit: true,
 };

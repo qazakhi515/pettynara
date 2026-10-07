@@ -3,12 +3,13 @@ const routerAdmin = express.Router();
 import restaurantController from "./controllers/restaurantController";
 import productController from "./controllers/productController";
 import makeUploader from "./libs/utils/uploader";
+import { limitLoginAttempts } from "./libs/utils/rateLimit";
 
 /* Restaurant */
 routerAdmin.get("/", restaurantController.goHome);
 routerAdmin
     .get("/login", restaurantController.getLogin)
-    .post("/login", restaurantController.processLogin);
+    .post("/login", limitLoginAttempts, restaurantController.processLogin);
 
 routerAdmin
     .get("/signup",restaurantController.getSignup)
