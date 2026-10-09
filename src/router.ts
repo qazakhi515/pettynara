@@ -74,4 +74,10 @@ router.post(
   memberController.verifyAuth,
   orderController.updateOrder,
 );
+
+router.post(
+  "/order/confirm-payment",
+  memberController.verifyAuth,
+  orderController.confirmPayment,
+);
 export default router;

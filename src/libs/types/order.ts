@@ -18,6 +18,9 @@ export interface Order {
   orderDelivery: number;
   orderStatus: OrderStatus;
   memberId: ObjectId;
+  paymentKey?: string;
+  paymentMethod?: string;
+  paidAt?: Date;
   createdAt: Date;
   updatedAt: Date;
   /** aggregate**/
@@ -40,4 +43,11 @@ export interface OrderInquiry {
 export interface OrderUpdateInput {
   orderId: string;
   orderStatus: OrderStatus;
+}
+
+/** The query string Toss adds to successUrl, sent on by the client. */
+export interface PaymentConfirmInput {
+  paymentKey: string;
+  orderId: string;
+  amount: number;
 }

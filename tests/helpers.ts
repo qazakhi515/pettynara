@@ -48,3 +48,48 @@ export const createProduct = async (overrides: Record<string, unknown> = {}) =>
 /** All Set-Cookie headers of a response, joined into one string. */
 export const cookiesOf = (res: request.Response): string =>
   ([] as string[]).concat(res.headers["set-cookie"] ?? []).join("; ");
+
+type TossReply = { status?: number; body?: Record<string, unknown> };
+
+/**
+ * Stands in for the Toss Payments API. By default it approves whatever is
+ * confirmed, echoing the request like Toss does; pass replies to script
+ * errors. Returns the spy so tests can inspect the calls.
+ */
+export const mockToss = (...replies: TossReply[]) =>
+  jest.spyOn(global, "fetch").mockImplementation(async (_url, init) => {
+    const reply = replies.length > 1 ? replies.shift()! : replies[0];
+    const sent = init?.body ? JSON.parse(String(init.body)) : {};
+    const body = reply?.body ?? {
+      paymentKey: sent.paymentKey,
+      orderId: sent.orderId,
+      totalAmount: sent.amount,
+      status: "DONE",
+      method: "카드",
+      approvedAt: "2026-10-09T10:00:00+09:00",
+    };
+    return new Response(JSON.stringify(body), {
+      status: reply?.status ?? 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  });
+
+/** The orderId the web client sends to Toss for one of our orders. */
+export const tossOrderId = (orderId: string, suffix = "a1b2c3") =>
+  `${orderId}_${suffix}`;
+
+/** Pays an order through /order/confirm-payment with Toss mocked. */
+export const payOrder = async (
+  auth: Record<string, string>,
+  order: { _id: string; orderTotal: number },
+) => {
+  mockToss();
+  return api()
+    .post("/order/confirm-payment")
+    .set(auth)
+    .send({
+      paymentKey: `pk_${order._id}`,
+      orderId: tossOrderId(order._id),
+      amount: order.orderTotal,
+    });
+};

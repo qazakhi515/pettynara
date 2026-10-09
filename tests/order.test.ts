@@ -1,7 +1,7 @@
 import { OrderStatus } from "../src/libs/enums/order.enum";
 import { ProductStatus } from "../src/libs/enums/product.enum";
 import MemberModel from "../src/schema/Member.model";
-import { api, createProduct, signupMember } from "./helpers";
+import { api, createProduct, payOrder, signupMember } from "./helpers";
 
 const orderBody = (product: any, quantity = 1) => [
   { productId: String(product._id), itemQuantity: quantity, itemPrice: product.productPrice },
@@ -65,9 +65,9 @@ describe("orders", () => {
     const { auth, member } = await signupMember();
     const order = await createOrder(auth, orderBody(await createProduct()));
 
-    const res = await updateOrder(auth, order.body._id, OrderStatus.PROCESS);
+    const res = await payOrder(auth, order.body);
 
-    expect(res.status).toBe(201);
+    expect(res.status).toBe(200);
     expect(res.body.orderStatus).toBe(OrderStatus.PROCESS);
     const stored = await MemberModel.findById(member._id);
     expect(stored?.memberPoints).toBe(1);
@@ -129,12 +129,13 @@ describe("order status changes", () => {
   const newOrder = async () => {
     const owner = await signupMember();
     const order = await createOrder(owner.auth, orderBody(await createProduct()));
-    return { ...owner, orderId: order.body._id as string };
+    return { ...owner, order: order.body, orderId: order.body._id as string };
   };
 
-  it("follow PAUSE -> PROCESS -> FINISH -> DELETE", async () => {
-    const { auth, orderId } = await newOrder();
-    for (const status of [OrderStatus.PROCESS, OrderStatus.FINISH, OrderStatus.DELETE]) {
+  it("follow PAUSE -> (payment) PROCESS -> FINISH -> DELETE", async () => {
+    const { auth, order, orderId } = await newOrder();
+    expect((await payOrder(auth, order)).status).toBe(200);
+    for (const status of [OrderStatus.FINISH, OrderStatus.DELETE]) {
       const res = await updateOrder(auth, orderId, status);
       expect(res.status).toBe(201);
       expect(res.body.orderStatus).toBe(status);
@@ -153,9 +154,15 @@ describe("order status changes", () => {
     expect(res.status).toBe(400);
   });
 
+  it("cannot be marked as paid without a confirmed payment", async () => {
+    const { auth, orderId } = await newOrder();
+    const res = await updateOrder(auth, orderId, OrderStatus.PROCESS);
+    expect(res.status).toBe(400);
+  });
+
   it("cannot be paid again to collect more points", async () => {
-    const { auth, member, orderId } = await newOrder();
-    await updateOrder(auth, orderId, OrderStatus.PROCESS);
+    const { auth, member, order, orderId } = await newOrder();
+    await payOrder(auth, order);
 
     const back = await updateOrder(auth, orderId, OrderStatus.PAUSE);
     const again = await updateOrder(auth, orderId, OrderStatus.PROCESS);

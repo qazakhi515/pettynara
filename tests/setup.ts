@@ -19,6 +19,7 @@ afterEach(async () => {
   // Each test starts with empty caches and rate-limit counters.
   await getRedis()?.flushdb();
   resetRateLimiters();
+  jest.restoreAllMocks();
 });
 
 afterAll(async () => {

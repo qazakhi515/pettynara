@@ -7,6 +7,7 @@ import {
   OrderInquiry,
   OrderItemInput,
   OrderUpdateInput,
+  PaymentConfirmInput,
 } from "../libs/types/order";
 import OrderModel from "../schema/Order.model";
 import OrderItemModel from "../schema/OrderItem.model";
@@ -14,12 +15,30 @@ import ProductModel from "../schema/Product.model";
 import { ProductStatus } from "../libs/enums/product.enum";
 import { isValidObjectId, ObjectId } from "mongoose";
 import MemberService from "./Member.service";
+import {
+  confirmTossPayment,
+  getTossPayment,
+  isTossConfigured,
+  TossApiError,
+  TossPayment,
+} from "../libs/utils/toss";
+
+/**
+ * The orderId sent to Toss: our order _id plus a suffix, so a buyer who closes
+ * the payment window can try again with a fresh id for the same order. Toss
+ * allows 6-64 characters of letters, digits, "-" and "_".
+ */
+const TOSS_ORDER_ID = /^([a-f0-9]{24})_[a-z0-9]{4,20}$/;
 
 const MAX_ITEM_QUANTITY = 100;
 
-/** The status changes a member may make. PAUSE -> PROCESS is the payment. */
+/**
+ * The status changes a member may make with updateOrder. PAUSE -> PROCESS is
+ * the payment, so it is left out: only confirmPayment, after Toss Payments
+ * approves the charge, can make it.
+ */
 const ORDER_STATUS_FLOW: Record<OrderStatus, OrderStatus[]> = {
-  [OrderStatus.PAUSE]: [OrderStatus.PROCESS, OrderStatus.DELETE],
+  [OrderStatus.PAUSE]: [OrderStatus.DELETE],
   [OrderStatus.PROCESS]: [OrderStatus.FINISH],
   [OrderStatus.FINISH]: [OrderStatus.DELETE],
   [OrderStatus.DELETE]: [],
@@ -207,15 +226,115 @@ class OrderService {
     if (!result)
       throw new Errors(HttpCode.BAD_REQUEST, Message.INVALID_STATUS_CHANGE);
 
-    if (orderStatus === OrderStatus.PROCESS) {
-      // ball qo'shish — bonus amal. Yiqilsa ham to'lov bekor bo'lmasligi kerak
-      try {
-        await this.memberService.addUserPoint(member, 1);
-      } catch (err) {
-        console.log("Warn, addUserPoint failed (order still PROCESS):", err);
-      }
-    }
     return result;
+  }
+
+  /**
+   * Finishes a Toss Payments checkout: the browser comes back to successUrl
+   * with paymentKey, orderId and amount, and posts them here. Nothing is
+   * charged until Toss confirms, so every check runs before that call.
+   */
+  public async confirmPayment(
+    member: Member,
+    input: PaymentConfirmInput,
+  ): Promise<Order> {
+    if (!isTossConfigured())
+      throw new Errors(HttpCode.SERVICE_UNAVAILABLE, Message.PAYMENTS_DISABLED);
+
+    const { paymentKey, orderId: tossOrderId, amount } = input ?? {};
+    const match =
+      typeof tossOrderId === "string" ? TOSS_ORDER_ID.exec(tossOrderId) : null;
+    if (
+      !match ||
+      typeof paymentKey !== "string" ||
+      paymentKey.length === 0 ||
+      paymentKey.length > 200 ||
+      !Number.isInteger(amount)
+    )
+      throw new Errors(HttpCode.BAD_REQUEST, Message.INVALID_PAYMENT);
+
+    const memberId = shapeIntoMongooseObjectId(member._id),
+      orderId = shapeIntoMongooseObjectId(match[1]);
+
+    const order = await this.orderModel
+      .findOne({ _id: orderId, memberId: memberId })
+      .exec();
+    if (!order) throw new Errors(HttpCode.NOT_FOUND, Message.NO_DATA_FOUNG);
+
+    // The success page can be reloaded; answer with the paid order again.
+    if (order.orderStatus === OrderStatus.PROCESS && order.paymentKey === paymentKey)
+      return order;
+    if (order.orderStatus !== OrderStatus.PAUSE)
+      throw new Errors(HttpCode.BAD_REQUEST, Message.INVALID_STATUS_CHANGE);
+
+    // The amount comes from the browser. Checking it against the stored total
+    // before confirming stops a buyer from paying less than the order costs.
+    if (amount !== order.orderTotal)
+      throw new Errors(HttpCode.BAD_REQUEST, Message.PAYMENT_AMOUNT_MISMATCH);
+
+    const payment = await this.approveWithToss({
+      paymentKey,
+      orderId: tossOrderId,
+      amount,
+    });
+    if (
+      payment.status !== "DONE" ||
+      payment.orderId !== tossOrderId ||
+      payment.totalAmount !== order.orderTotal
+    ) {
+      console.log("Error, confirmPayment: unexpected Toss payment", payment);
+      throw new Errors(HttpCode.BAD_REQUEST, Message.PAYMENT_FAILED);
+    }
+
+    // orderStatus in the filter makes a parallel confirm succeed only once.
+    const paid = await this.orderModel
+      .findOneAndUpdate(
+        { _id: orderId, memberId: memberId, orderStatus: OrderStatus.PAUSE },
+        {
+          orderStatus: OrderStatus.PROCESS,
+          paymentKey: payment.paymentKey,
+          paymentMethod: payment.method,
+          paidAt: payment.approvedAt ? new Date(payment.approvedAt) : new Date(),
+        },
+        { new: true },
+      )
+      .exec();
+    if (!paid) {
+      const current = await this.orderModel.findById(orderId).exec();
+      if (current?.paymentKey === paymentKey) return current;
+      throw new Errors(HttpCode.BAD_REQUEST, Message.INVALID_STATUS_CHANGE);
+    }
+
+    // ball qo'shish — bonus amal. Yiqilsa ham to'lov bekor bo'lmasligi kerak
+    try {
+      await this.memberService.addUserPoint(member, 1);
+    } catch (err) {
+      console.log("Warn, addUserPoint failed (order still PROCESS):", err);
+    }
+    return paid;
+  }
+
+  /** Calls the Toss confirm API and maps its failures to API errors. */
+  private async approveWithToss(
+    input: PaymentConfirmInput,
+  ): Promise<TossPayment> {
+    try {
+      return await confirmTossPayment(input);
+    } catch (err) {
+      if (err instanceof TossApiError) {
+        console.log("Error, Toss confirm:", err.status, err.code, err.message);
+        // A retry after a lost response: the payment is already approved.
+        if (err.code === "ALREADY_PROCESSED_PAYMENT")
+          return await getTossPayment(input.paymentKey).catch(() => {
+            throw new Errors(HttpCode.BAD_GATEWAY, Message.PAYMENT_PROVIDER_DOWN);
+          });
+        if (err.status >= 500)
+          throw new Errors(HttpCode.BAD_GATEWAY, Message.PAYMENT_PROVIDER_DOWN);
+        throw new Errors(HttpCode.BAD_REQUEST, Message.PAYMENT_FAILED);
+      }
+      console.log("Error, Toss confirm:", err);
+      throw new Errors(HttpCode.BAD_GATEWAY, Message.PAYMENT_PROVIDER_DOWN);
+    }
   }
 }
 
