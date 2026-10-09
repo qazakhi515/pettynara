@@ -55,5 +55,20 @@ orderController.updateOrder = async (req: ExtendedRequest, res: Response) => {
   }
 };
 
+orderController.confirmPayment = async (
+  req: ExtendedRequest,
+  res: Response,
+) => {
+  try {
+    console.log("confirmPayment");
+    const result = await orderService.confirmPayment(req.member, req.body);
+    res.status(HttpCode.OK).json(result);
+  } catch (err) {
+    console.log("Error, confirmPayment:", err);
+    if (err instanceof Errors) res.status(err.code).json(err);
+    else res.status(Errors.standart.code).json(Errors.standart);
+  }
+};
+
 export default orderController;
 //

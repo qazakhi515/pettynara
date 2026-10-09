@@ -25,6 +25,7 @@ More screenshots are in the [frontend repo](https://github.com/qazakhi515/pettyn
 - **Products:** list with pagination, category filter, search and sorting; product detail with a per-member view count.
 - **Likes:** like and unlike products on the server, with a sync endpoint that merges likes made before logging in.
 - **Orders:** create an order from the basket, list orders by status, and move an order through `PAUSE → PROCESS → FINISH`. Members earn points when an order is paid.
+- **Payments:** Toss Payments widget (test mode). The server checks the amount against the order and confirms the payment with Toss before an order counts as paid.
 - **Top users:** members ranked by points.
 - **Admin panel (EJS):** session-based login; create products with up to 5 images, change product status, manage users.
 - **Image storage:** uploads go to AWS S3 (local disk in development), images only, 5 MB per file.
@@ -41,6 +42,7 @@ flowchart LR
     A --> M[(MongoDB Atlas)]
     A --> R[(Redis<br/>container)]
     A -->|upload| S[(AWS S3<br/>ap-northeast-2)]
+    A -->|confirm payment| T[Toss Payments API]
     U -->|load images| S
 ```
 
@@ -54,6 +56,7 @@ The apps and Redis run as Docker containers on one VPS. Redis has no published p
 | Web | Express 4, EJS (admin panel), Multer |
 | Data | MongoDB Atlas, Mongoose |
 | Auth | JWT in a cookie (API), `express-session` with a Redis store (admin) |
+| Payments | Toss Payments V2 (payment widget), confirm API called with `fetch` |
 | Cache and limits | Redis 7, `ioredis`, `rate-limiter-flexible`, `connect-redis` |
 | Storage | AWS S3 via `@aws-sdk/client-s3` |
 | Testing | Jest, Supertest, mongodb-memory-server, GitHub Actions |
@@ -94,7 +97,8 @@ tests/                   # API tests (Jest + Supertest)
 | POST | `/product/:id/like` | ✔ | Toggle like |
 | POST | `/order/create` | ✔ | Create an order from basket items |
 | GET | `/order/all` | ✔ | Member's orders by status |
-| POST | `/order/update` | ✔ | Change order status (owner only) |
+| POST | `/order/update` | ✔ | Cancel or finish an order (owner only; paying goes through confirm-payment) |
+| POST | `/order/confirm-payment` | ✔ | Confirm a Toss payment: `paymentKey`, `orderId`, `amount` from the success URL |
 
 ## Testing
 
@@ -102,7 +106,7 @@ tests/                   # API tests (Jest + Supertest)
 npm test
 ```
 
-98 tests call the API over HTTP with Supertest and run against an in-memory MongoDB (`mongodb-memory-server`), so they need no setup and never touch a real database. They cover authentication, products, orders, likes, profile updates, uploads, the admin guard, rate limits, caching and admin sessions. GitHub Actions runs the build and then the tests twice: without Redis, and with a Redis service container where the Redis-only tests also run.
+113 tests call the API over HTTP with Supertest and run against an in-memory MongoDB (`mongodb-memory-server`), so they need no setup and never touch a real database. They cover authentication, products, orders, likes, profile updates, uploads, the admin guard, rate limits, caching, admin sessions and payments (with the Toss API mocked). GitHub Actions runs the build and then the tests twice: without Redis, and with a Redis service container where the Redis-only tests also run.
 
 Writing the tests surfaced several bugs, each fixed in its own commit with a test that reproduces it:
 
@@ -114,6 +118,30 @@ Writing the tests surfaced several bugs, each fixed in its own commit with a tes
 | Search text went straight into `RegExp` | `(` returned a 500; crafted patterns could stall the regex engine | Search input is escaped |
 | A typo in the member status filter; top users sorted ascending | Blocked members kept access to their profile; the "top" list showed the lowest scores | Corrected the filter and the sort |
 | Missing `page`/`limit`, malformed ids and rejected uploads | 500 errors for client mistakes | Defaults and limits, 404 for bad ids, 400 for bad files |
+
+## Payments
+
+Checkout uses the Toss Payments widget in test mode, so no money moves. The web client renders the widget on an order's payment screen; after the buyer approves, Toss redirects to `/payment/success?paymentKey=…&orderId=…&amount=…`, and the client posts those values to `POST /order/confirm-payment`.
+
+```mermaid
+sequenceDiagram
+    participant B as Browser
+    participant A as API
+    participant T as Toss Payments
+    B->>T: requestPayment (client key)
+    T-->>B: redirect to successUrl with paymentKey, orderId, amount
+    B->>A: POST /order/confirm-payment
+    A->>A: owner? still PAUSE? amount == orderTotal?
+    A->>T: POST /v1/payments/confirm (secret key, Idempotency-Key)
+    T-->>A: status DONE
+    A->>A: order PAUSE → PROCESS, +1 point
+    A-->>B: paid order
+```
+
+- **Nothing is trusted from the browser.** The amount in the success URL is compared with the stored order total before Toss is called, and the Toss response is checked again (status `DONE`, same order id and amount).
+- **The only way to `PROCESS` is a confirmed payment.** `/order/update` no longer accepts `PAUSE → PROCESS`, which used to let a member mark an order paid without paying.
+- **Retries are safe.** The payment key is sent as the `Idempotency-Key`, a reloaded success page returns the paid order without a second confirm, and `ALREADY_PROCESSED_PAYMENT` is resolved by looking the payment up.
+- **Failures.** A rejected card leaves the order unpaid and can be retried with a new Toss order id (`<orderId>_<suffix>`); Toss errors on their side answer `502`; without `TOSS_SECRET_KEY` the endpoint answers `503`.
 
 ## Redis
 
@@ -164,6 +192,7 @@ docker run -d --name redis -p 6379:6379 redis:7-alpine
 | `SECRET_TOKEN` | ✔ | JWT signing secret |
 | `AWS_REGION`, `AWS_S3_BUCKET` | | Enable S3 uploads; without them files go to `./uploads` |
 | `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | | Credentials for S3 (not needed with an instance role) |
+| `TOSS_SECRET_KEY` | for payments | Toss Payments secret key (`test_gsk_…`); see [Payments](#payments) |
 | `REDIS_URL` | | Enables Redis, for example `redis://localhost:6379`; see [Redis](#redis) |
 
 | Script | Description |
@@ -187,7 +216,8 @@ The image is a two-stage build: TypeScript is compiled in the first stage, and t
 - [ ] Schema-based request validation and a central error handler
 - [ ] Node.js 22 base image
 - [ ] Serve images through CloudFront and close public bucket access
-- [ ] Kakao login and Toss Payments
+- [x] Toss Payments (test mode)
+- [ ] Kakao login
 
 ## Background
 

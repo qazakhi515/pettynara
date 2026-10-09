@@ -8,6 +8,8 @@ export enum HttpCode {
   NOT_FOUND = 404,
   TOO_MANY_REQUESTS = 429,
   INTERNAL_SERVER_ERROR = 500,
+  BAD_GATEWAY = 502,
+  SERVICE_UNAVAILABLE = 503,
 }
 
 export enum Message {
@@ -25,6 +27,11 @@ export enum Message {
   INVALID_STATUS_CHANGE = "This order cannot be moved to that status",
   INVALID_IMAGE = "Only image files up to 5 MB can be uploaded",
   TOO_MANY_REQUESTS = "Too many attempts, please try again later",
+  INVALID_PAYMENT = "Payment details are invalid",
+  PAYMENT_AMOUNT_MISMATCH = "The paid amount does not match the order total",
+  PAYMENT_FAILED = "The payment could not be completed",
+  PAYMENT_PROVIDER_DOWN = "The payment service is not responding, please try again",
+  PAYMENTS_DISABLED = "Online payment is not available right now",
   NOT_AUTHENTICATED = "You are not authenticated, Please login first",
   TOKEN_CREATION_FAILED = "Token creation error!",
   TOKEN_EXPIRED = "Your session has expired, please login again",

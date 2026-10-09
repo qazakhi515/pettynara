@@ -20,6 +20,16 @@ const orderSchema = new Schema(
       required: true,
       ref: "Member",
     },
+    // Set when Toss Payments confirms the payment (PAUSE -> PROCESS).
+    paymentKey: {
+      type: String,
+    },
+    paymentMethod: {
+      type: String,
+    },
+    paidAt: {
+      type: Date,
+    },
   },
   { timestamps: true },
 );
