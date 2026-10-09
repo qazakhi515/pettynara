@@ -4,7 +4,7 @@ REST API and admin panel for **Pettynara**, an online pet shop where customers b
 
 **Live:** [pettynara.uz](https://pettynara.uz) · **API:** [api.pettynara.uz](https://api.pettynara.uz) · **Frontend repo:** [pettynara-react](https://github.com/qazakhi515/pettynara-react)
 
-[![CI](https://github.com/qazakhi515/pettynara/actions/workflows/ci.yml/badge.svg?branch=petty-mod)](https://github.com/qazakhi515/pettynara/actions/workflows/ci.yml)
+[![CI](https://github.com/qazakhi515/pettynara/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/qazakhi515/pettynara/actions/workflows/ci.yml)
 ![Node.js](https://img.shields.io/badge/Node.js-20-339933?logo=nodedotjs&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-4-000000?logo=express&logoColor=white)
